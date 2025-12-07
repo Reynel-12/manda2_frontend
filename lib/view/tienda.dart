@@ -927,6 +927,10 @@ class _StoreScreenState extends State<StoreScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF6B00),
                   foregroundColor: Colors.white,
+                  minimumSize: const Size(
+                    0,
+                    50,
+                  ), // Override global infinite width
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 12,
