@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/tienda.dart';
 
 // Pantalla Home
 class HomeScreen extends StatefulWidget {
@@ -44,13 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Entrega en',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[300],
-              ),
-            ),
+            // Text(
+            //   'Entrega en',
+            //   style: TextStyle(fontSize: 14, color: Colors.grey[300]),
+            // ),
             Row(
               children: [
                 const Icon(Icons.location_on_outlined, size: 20),
@@ -144,13 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Acción rápida
-        },
-        backgroundColor: const Color(0xFFFF6B00),
-        child: const Icon(Icons.flash_on_outlined, color: Colors.white),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // Acción rápida
+      //   },
+      //   backgroundColor: const Color(0xFFFF6B00),
+      //   child: const Icon(Icons.flash_on_outlined, color: Colors.white),
+      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
@@ -164,9 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Header del drawer
           Container(
             height: 200,
-            decoration: const BoxDecoration(
-              color: Color(0xFF05386B),
-            ),
+            decoration: const BoxDecoration(color: Color(0xFF05386B)),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -196,10 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'juan.perez@email.com',
-                    style: TextStyle(
-                      color: Colors.grey[300],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[300], fontSize: 14),
                   ),
                 ],
               ),
@@ -215,11 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Historial de Pedidos',
                   () {},
                 ),
-                _buildDrawerItem(
-                  Icons.favorite_outline,
-                  'Favoritos',
-                  () {},
-                ),
+                _buildDrawerItem(Icons.favorite_outline, 'Favoritos', () {}),
                 _buildDrawerItem(
                   Icons.payment_outlined,
                   'Métodos de Pago',
@@ -230,11 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Promociones',
                   () {},
                 ),
-                _buildDrawerItem(
-                  Icons.help_outline,
-                  'Ayuda',
-                  () {},
-                ),
+                _buildDrawerItem(Icons.help_outline, 'Ayuda', () {}),
                 _buildDrawerItem(
                   Icons.settings_outlined,
                   'Configuración',
@@ -256,8 +241,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Item del drawer
-  Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap,
-      {Color? color}) {
+  Widget _buildDrawerItem(
+    IconData icon,
+    String title,
+    VoidCallback onTap, {
+    Color? color,
+  }) {
     return ListTile(
       leading: Icon(icon, color: color ?? const Color(0xFF05386B)),
       title: Text(
@@ -317,7 +306,16 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Navegar a pulpería oficial
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const StoreScreen(
+                  storeName: 'Pulpería Oficial',
+                  storeCategory: 'Pulpería',
+                  isOfficialStore: true,
+                ),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
@@ -352,10 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 4),
                       Text(
                         'Productos con precios especiales y envío prioritario',
-                        style: TextStyle(
-                          color: Colors.grey[200],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[200], fontSize: 14),
                         maxLines: 2,
                       ),
                     ],
@@ -500,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(
-          height: 180,
+          height: 240,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: featuredStores.length,
@@ -516,98 +511,120 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Tarjeta de tienda
   Widget _buildStoreCard(Store store) {
-    return Container(
-      width: 160,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagen de la tienda
-          Container(
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: Center(
-              child: Icon(
-                Icons.store_outlined,
-                size: 50,
-                color: Colors.grey[400],
-              ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StoreScreen(
+              storeName: store.name,
+              storeCategory: store.category,
             ),
           ),
-          // Información de la tienda
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  store.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Color(0xFF05386B),
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+        );
+      },
+      child: Container(
+        width: 160,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Imagen de la tienda
+            Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
-                const SizedBox(height: 4),
-                Row(
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.store_outlined,
+                  size: 50,
+                  color: Colors.grey[400],
+                ),
+              ),
+            ),
+            // Información de la tienda
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      store.rating,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        store.category,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          store.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Color(0xFF05386B),
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text(
+                              store.rating,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                store.category,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Text(
+                      store.deliveryTime,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFFFF6B00),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  store.deliveryTime,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFFFF6B00),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -633,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            childAspectRatio: 0.75,
+            childAspectRatio: 0.6,
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {
@@ -681,60 +698,67 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           // Información del producto
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Color(0xFF05386B),
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  product.price,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF05386B),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: () {
-                    // Agregar al carrito
-                    setState(() {
-                      _cartItemCount++;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('${product.name} agregado al carrito'),
-                        backgroundColor: const Color(0xFF05386B),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Color(0xFF05386B),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF6B00),
-                    minimumSize: const Size(double.infinity, 36),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      const SizedBox(height: 8),
+                      Text(
+                        product.price,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF05386B),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Agregar al carrito
+                      setState(() {
+                        _cartItemCount++;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${product.name} agregado al carrito'),
+                          backgroundColor: const Color(0xFF05386B),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6B00),
+                      minimumSize: const Size(double.infinity, 36),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Agregar',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'Agregar',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
