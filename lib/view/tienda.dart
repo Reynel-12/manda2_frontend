@@ -260,19 +260,48 @@ class _StoreScreenState extends State<StoreScreen> {
                   : null,
               background: _buildStoreBanner(),
             ),
+            leading: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(Icons.arrow_back, color: Colors.white),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
             actions: [
               // Icono de favoritos
               IconButton(
-                icon: const Icon(Icons.favorite_border_outlined),
-                onPressed: () {
-                  // Agregar a favoritos
-                },
+                icon: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(
+                    Icons.favorite_border_outlined,
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () {},
               ),
               // Icono del carrito con badge
               Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.shopping_cart_outlined),
+                    icon: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
                     onPressed: () {
                       // Navegar al carrito
                     },

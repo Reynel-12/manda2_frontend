@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:manda2_frontend/view/tienda.dart';
+import 'package:manda2_frontend/view/producto_details.dart';
+import 'package:manda2_frontend/view/tienda.dart' hide Product;
 
 // Pantalla Home
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -30,11 +31,66 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final List<Product> products = [
-    Product('Leche Entera 1L', '\$2.50', 'assets/leche.png'),
-    Product('Pan Integral', '\$1.75', 'assets/pan.png'),
-    Product('Huevos x12', '\$3.20', 'assets/huevos.png'),
-    Product('Arroz 5kg', '\$8.90', 'assets/arroz.png'),
-    Product('Aceite Vegetal 1L', '\$4.30', 'assets/aceite.png'),
+    Product(
+      'Leche Entera 1L',
+      id: 1,
+      name: 'Leche Entera 1L',
+      description: '',
+      price: 2.50,
+      category: 'Supermercado',
+      storeName: 'Pulpería "El Buen Precio"',
+      storeCategory: 'Supermercado',
+      unit: '1L',
+      stock: 10,
+    ),
+    Product(
+      'Pan Integral',
+      id: 2,
+      name: 'Pan Integral',
+      description: 'Pan integral de 500g',
+      price: 1.75,
+      category: 'Supermercado',
+      storeName: 'Pulpería "El Buen Precio"',
+      storeCategory: 'Supermercado',
+      unit: '500g',
+      stock: 10,
+    ),
+    Product(
+      'Huevos x12',
+      id: 3,
+      name: 'Huevos x12',
+      description: 'Huevos x12',
+      price: 3.20,
+      category: 'Supermercado',
+      storeName: 'Pulpería "El Buen Precio"',
+      storeCategory: 'Supermercado',
+      unit: '12',
+      stock: 10,
+    ),
+    Product(
+      'Arroz 5kg',
+      id: 4,
+      name: 'Arroz 5kg',
+      description: 'Arroz 5kg',
+      price: 8.90,
+      category: 'Supermercado',
+      storeName: 'Pulpería "El Buen Precio"',
+      storeCategory: 'Supermercado',
+      unit: '5kg',
+      stock: 10,
+    ),
+    Product(
+      'Aceite Vegetal 1L',
+      id: 5,
+      name: 'Aceite Vegetal 1L',
+      description: 'Aceite vegetal 1L',
+      price: 4.30,
+      category: 'Supermercado',
+      storeName: 'Pulpería "El Buen Precio"',
+      storeCategory: 'Supermercado',
+      unit: '1L',
+      stock: 10,
+    ),
   ];
 
   @override
@@ -664,104 +720,125 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Tarjeta de producto
   Widget _buildProductCard(Product product) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailScreen(product: product),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagen del producto
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Imagen del producto
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 60,
+                  color: Colors.grey[400],
+                ),
               ),
             ),
-            child: Center(
-              child: Icon(
-                Icons.shopping_bag_outlined,
-                size: 60,
-                color: Colors.grey[400],
-              ),
-            ),
-          ),
-          // Información del producto
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
+            // Información del producto
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Color(0xFF05386B),
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          product.price.toString(),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF05386B),
+                          ),
+                        ),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Agregar al carrito
+                        setState(() {
+                          _cartItemCount++;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${product.name} agregado al carrito',
+                            ),
+                            backgroundColor: const Color(0xFF05386B),
+                            action: SnackBarAction(
+                              label: 'Deshacer',
+                              textColor: Colors.white,
+                              onPressed: () {
+                                setState(() {
+                                  _cartItemCount--;
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF6B00),
+                        minimumSize: const Size(double.infinity, 36),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Agregar',
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF05386B),
+                          fontWeight: FontWeight.w600,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        product.price,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF05386B),
-                        ),
-                      ),
-                    ],
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Agregar al carrito
-                      setState(() {
-                        _cartItemCount++;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${product.name} agregado al carrito'),
-                          backgroundColor: const Color(0xFF05386B),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B00),
-                      minimumSize: const Size(double.infinity, 36),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Agregar',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -830,13 +907,13 @@ class Store {
   Store(this.name, this.rating, this.deliveryTime, this.category);
 }
 
-class Product {
-  final String name;
-  final String price;
-  final String imagePath;
+// class Product {
+//   final String name;
+//   final String price;
+//   final String imagePath;
 
-  Product(this.name, this.price, this.imagePath);
-}
+//   Product(this.name, this.price, this.imagePath);
+// }
 
 // Widget para visualización responsive
 class ResponsiveLayout extends StatelessWidget {
