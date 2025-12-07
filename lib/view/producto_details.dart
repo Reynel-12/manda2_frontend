@@ -148,19 +148,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             actions: [
-              IconButton(
-                icon: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.share_outlined, color: Colors.white),
-                ),
-                onPressed: () {
-                  // Compartir producto
-                },
-              ),
+              // IconButton(
+              //   icon: Container(
+              //     padding: const EdgeInsets.all(6),
+              //     decoration: BoxDecoration(
+              //       color: Colors.black.withOpacity(0.5),
+              //       borderRadius: BorderRadius.circular(20),
+              //     ),
+              //     child: const Icon(Icons.share_outlined, color: Colors.white),
+              //   ),
+              //   onPressed: () {
+              //     // Compartir producto
+              //   },
+              // ),
               IconButton(
                 icon: Container(
                   padding: const EdgeInsets.all(6),

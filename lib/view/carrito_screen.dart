@@ -192,10 +192,31 @@ class _CartScreenState extends State<CartScreen> {
         backgroundColor: const Color(0xFF05386B),
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           if (_cartItems.isNotEmpty)
             IconButton(
-              icon: const Icon(Icons.delete_outline_outlined),
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.delete_outline_outlined,
+                  color: Colors.white,
+                ),
+              ),
               onPressed: _clearCart,
               tooltip: 'Vaciar carrito',
             ),
@@ -921,6 +942,17 @@ class CheckoutScreen extends StatelessWidget {
         title: const Text('Confirmar Pedido'),
         backgroundColor: const Color(0xFF05386B),
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
