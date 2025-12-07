@@ -191,25 +191,26 @@ class _StoreScreenState extends State<StoreScreen> {
     setState(() {
       _cartItems.add(product);
       _cartItemCount = _cartItems.length;
-
-      // Mostrar snackbar de confirmación
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${product.name} agregado al carrito'),
-          backgroundColor: const Color(0xFF05386B),
-          action: SnackBarAction(
-            label: 'Deshacer',
-            textColor: Colors.white,
-            onPressed: () {
-              setState(() {
-                _cartItems.removeLast();
-                _cartItemCount = _cartItems.length;
-              });
-            },
-          ),
-        ),
-      );
     });
+
+    // Mostrar snackbar de confirmación
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 1),
+        content: Text('${product.name} agregado al carrito'),
+        backgroundColor: const Color(0xFF05386B),
+        action: SnackBarAction(
+          label: 'Deshacer',
+          textColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              _cartItems.removeLast();
+              _cartItemCount = _cartItems.length;
+            });
+          },
+        ),
+      ),
+    );
   }
 
   void _toggleFavorite(int productId) {
@@ -336,22 +337,22 @@ class _StoreScreenState extends State<StoreScreen> {
       ),
 
       // Botón flotante para ver carrito
-      floatingActionButton: _cartItemCount > 0
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                // Ver carrito
-              },
-              backgroundColor: const Color(0xFFFF6B00),
-              icon: const Icon(Icons.shopping_cart_checkout_outlined),
-              label: Text(
-                'Ver Carrito (\$${_cartItems.fold(0.0, (sum, item) => sum + item.price).toStringAsFixed(2)})',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            )
-          : null,
+      // floatingActionButton: _cartItemCount > 0
+      //     ? FloatingActionButton.extended(
+      //         onPressed: () {
+      //           // Ver carrito
+      //         },
+      //         backgroundColor: const Color(0xFFFF6B00),
+      //         icon: const Icon(Icons.shopping_cart_checkout_outlined),
+      //         label: Text(
+      //           'Ver Carrito (\$${_cartItems.fold(0.0, (sum, item) => sum + item.price).toStringAsFixed(2)})',
+      //           style: const TextStyle(fontWeight: FontWeight.bold),
+      //         ),
+      //       )
+      //     : null,
 
       // Navegación inferior
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      // bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
@@ -673,7 +674,7 @@ class _StoreScreenState extends State<StoreScreen> {
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.50, // Further adjusted to prevent overflow
       ),
       delegate: SliverChildBuilderDelegate((context, index) {
         final product = filteredProducts[index];
@@ -739,14 +740,14 @@ class _StoreScreenState extends State<StoreScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       product.category,
                       style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                     ),
 
                     // Descripción
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       product.description,
                       style: TextStyle(fontSize: 11, color: Colors.grey[600]),
@@ -755,7 +756,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
 
                     // Precio
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         Text(
@@ -782,7 +783,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
 
                     // Stock y unidad
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Row(
                       children: [
                         Text(
@@ -806,14 +807,17 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
 
                     // Botón agregar
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     SizedBox(
                       width: double.infinity,
+                      height: 36, // Constrain button height
                       child: ElevatedButton(
                         onPressed: () => _addToCart(product),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFF6B00),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 0,
+                          ), // Reduce padding
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -821,7 +825,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         child: const Text(
                           'Agregar',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13, // Slightly smaller font
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -877,79 +881,79 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  // Barra de navegación inferior
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              // Total del carrito
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Total en carrito',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    Text(
-                      '\$${_cartItems.fold(0.0, (sum, item) => sum + item.price).toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF05386B),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+  // // Barra de navegación inferior
+  // Widget _buildBottomNavigationBar() {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.2),
+  //           blurRadius: 10,
+  //           spreadRadius: 2,
+  //         ),
+  //       ],
+  //     ),
+  //     child: SafeArea(
+  //       child: Padding(
+  //         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  //         child: Row(
+  //           children: [
+  //             // Total del carrito
+  //             Expanded(
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Text(
+  //                     'Total en carrito',
+  //                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+  //                   ),
+  //                   Text(
+  //                     '\$${_cartItems.fold(0.0, (sum, item) => sum + item.price).toStringAsFixed(2)}',
+  //                     style: const TextStyle(
+  //                       fontSize: 18,
+  //                       fontWeight: FontWeight.bold,
+  //                       color: Color(0xFF05386B),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
 
-              // Botón de pagar
-              ElevatedButton(
-                onPressed: _cartItemCount > 0
-                    ? () {
-                        // Ir a pagar
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF6B00),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(
-                    0,
-                    50,
-                  ), // Override global infinite width
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Pagar Ahora',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  //             // Botón de pagar
+  //             ElevatedButton(
+  //               onPressed: _cartItemCount > 0
+  //                   ? () {
+  //                       // Ir a pagar
+  //                     }
+  //                   : null,
+  //               style: ElevatedButton.styleFrom(
+  //                 backgroundColor: const Color(0xFFFF6B00),
+  //                 foregroundColor: Colors.white,
+  //                 minimumSize: const Size(
+  //                   0,
+  //                   50,
+  //                 ), // Override global infinite width
+  //                 padding: const EdgeInsets.symmetric(
+  //                   horizontal: 24,
+  //                   vertical: 12,
+  //                 ),
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(12),
+  //                 ),
+  //               ),
+  //               child: const Text(
+  //                 'Pagar Ahora',
+  //                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 // Delegate para filtros de categoría
@@ -1061,10 +1065,10 @@ class _CategoryFilterDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 110;
+  double get maxExtent => 130; // Increased to prevent overflow
 
   @override
-  double get minExtent => 110;
+  double get minExtent => 130; // Increased to prevent overflow
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
