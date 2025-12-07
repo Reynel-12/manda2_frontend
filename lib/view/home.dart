@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/carrito_screen.dart' hide Product;
 import 'package:manda2_frontend/view/producto_details.dart';
 import 'package:manda2_frontend/view/tienda.dart' hide Product;
 
@@ -137,6 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.shopping_cart_outlined),
                 onPressed: () {
                   // Navegar al carrito
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CartScreen()),
+                  );
                 },
               ),
               if (_cartItemCount > 0)
