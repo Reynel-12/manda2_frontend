@@ -19,7 +19,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _currentImageIndex = 0;
 
   // Imágenes de ejemplo para el producto
-  final List<String> productImages = [
+  final List<String> storeImages = [
     'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
     'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
     'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
@@ -206,7 +206,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   _buildNutritionInfo(),
 
                   // Reviews (opcional)
-                  _buildReviewsSection(),
+                  // _buildReviewsSection(),
                 ],
               ),
             ),
@@ -226,7 +226,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         // Carousel de imágenes
         PageView.builder(
           controller: _imagePageController,
-          itemCount: productImages.length,
+          itemCount: widget.product.image.length,
           onPageChanged: (index) {
             setState(() {
               _currentImageIndex = index;
@@ -236,10 +236,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             return Container(
               color: Colors.grey[100],
               child: Center(
-                child: Icon(
-                  Icons.shopping_bag_outlined,
-                  size: 150,
-                  color: Colors.grey[300],
+                child: Image.network(
+                  widget.product.image[index],
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
             );
@@ -254,7 +255,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
-              productImages.length,
+              widget.product.image.length,
               (index) => Container(
                 width: 8,
                 height: 8,
@@ -343,6 +344,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 builder: (context) => StoreScreen(
                   storeName: product.storeName,
                   storeCategory: product.category,
+                  storeImage: storeImages,
                 ),
               ),
             );
@@ -480,14 +482,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           Row(
             children: [
               // Rating
-              _buildMetricItem(
-                Icons.star,
-                product.rating.toStringAsFixed(1),
-                'Rating',
-                Colors.amber,
-              ),
+              // _buildMetricItem(
+              //   Icons.star,
+              //   product.rating.toStringAsFixed(1),
+              //   'Rating',
+              //   Colors.amber,
+              // ),
 
-              const SizedBox(width: 24),
+              // const SizedBox(width: 24),
 
               // Ventas
               _buildMetricItem(
@@ -852,91 +854,91 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   // Sección de reviews (opcional)
-  Widget _buildReviewsSection() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 100), // Espacio para el bottom bar
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Reseñas (42)',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF05386B),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Ver todas las reseñas
-                },
-                child: const Text(
-                  'Ver todas',
-                  style: TextStyle(
-                    color: Color(0xFFFF6B00),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
+  // Widget _buildReviewsSection() {
+  //   return Container(
+  //     margin: const EdgeInsets.only(bottom: 100), // Espacio para el bottom bar
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             const Text(
+  //               'Reseñas (42)',
+  //               style: TextStyle(
+  //                 fontSize: 20,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: Color(0xFF05386B),
+  //               ),
+  //             ),
+  //             TextButton(
+  //               onPressed: () {
+  //                 // Ver todas las reseñas
+  //               },
+  //               child: const Text(
+  //                 'Ver todas',
+  //                 style: TextStyle(
+  //                   color: Color(0xFFFF6B00),
+  //                   fontWeight: FontWeight.w600,
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
 
-          const SizedBox(height: 12),
+  //         const SizedBox(height: 12),
 
-          // Review de ejemplo
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  blurRadius: 5,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const Icon(Icons.star_half, color: Colors.amber, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      '4.5',
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Excelente producto, muy fresco y de buena calidad. Lo recomiendo totalmente.',
-                  style: TextStyle(color: Color(0xFF05386B)),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Por Juan Pérez • Hace 2 días',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  //         // Review de ejemplo
+  //         Container(
+  //           padding: const EdgeInsets.all(16),
+  //           decoration: BoxDecoration(
+  //             color: Colors.white,
+  //             borderRadius: BorderRadius.circular(12),
+  //             boxShadow: [
+  //               BoxShadow(
+  //                 color: Colors.grey.withOpacity(0.1),
+  //                 blurRadius: 5,
+  //                 spreadRadius: 1,
+  //               ),
+  //             ],
+  //           ),
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               Row(
+  //                 children: [
+  //                   const Icon(Icons.star, color: Colors.amber, size: 16),
+  //                   const Icon(Icons.star, color: Colors.amber, size: 16),
+  //                   const Icon(Icons.star, color: Colors.amber, size: 16),
+  //                   const Icon(Icons.star, color: Colors.amber, size: 16),
+  //                   const Icon(Icons.star_half, color: Colors.amber, size: 16),
+  //                   const SizedBox(width: 8),
+  //                   Text(
+  //                     '4.5',
+  //                     style: TextStyle(
+  //                       color: Colors.grey[700],
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //               const SizedBox(height: 8),
+  //               const Text(
+  //                 'Excelente producto, muy fresco y de buena calidad. Lo recomiendo totalmente.',
+  //                 style: TextStyle(color: Color(0xFF05386B)),
+  //               ),
+  //               const SizedBox(height: 8),
+  //               Text(
+  //                 'Por Juan Pérez • Hace 2 días',
+  //                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Barra inferior fija
   Widget _buildBottomBar() {
@@ -1028,6 +1030,7 @@ class Product {
   final String category;
   final String storeName;
   final String storeCategory;
+  final List<String> image;
   bool isFavorite;
   final double rating;
   final int stock;
@@ -1045,6 +1048,7 @@ class Product {
     required this.category,
     required this.storeName,
     required this.storeCategory,
+    required this.image,
     this.isFavorite = false,
     this.rating = 0.0,
     this.stock = 0,
@@ -1100,6 +1104,9 @@ Product exampleProduct = Product(
   price: 2.50,
   originalPrice: 2.80,
   category: 'Lácteos',
+  image: [
+    'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+  ],
   storeName: 'Pulpería "El Buen Precio"',
   storeCategory: 'Supermercado',
   isFavorite: false,

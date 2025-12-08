@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/producto_details.dart';
 
 class StoreScreen extends StatefulWidget {
   final bool isOfficialStore;
   final String storeName;
   final String storeCategory;
+  final List<String> storeImage;
 
   const StoreScreen({
     super.key,
     this.isOfficialStore = false,
     required this.storeName,
     required this.storeCategory,
+    required this.storeImage,
   });
 
   @override
@@ -38,132 +41,172 @@ class _StoreScreenState extends State<StoreScreen> {
   // Productos de ejemplo
   final List<Product> products = [
     Product(
+      'Leche Entera 1L',
       id: 1,
       name: 'Leche Entera 1L',
       description: 'Leche fresca pasteurizada',
       price: 2.50,
       originalPrice: 2.80,
       category: 'Lácteos',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.5,
       stock: 20,
       unit: 'unidad',
     ),
     Product(
+      'Pan Integral Bolsa',
       id: 2,
       name: 'Pan Integral Bolsa',
       description: 'Pan integral fresco 500g',
       price: 1.75,
       originalPrice: 2.00,
       category: 'Panadería',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: true,
-      rating: 4.2,
       stock: 15,
       unit: 'bolsa',
     ),
     Product(
+      'Huevos Blancos x12',
       id: 3,
       name: 'Huevos Blancos x12',
       description: 'Huevos frescos grado A',
       price: 3.20,
       originalPrice: 3.50,
       category: 'Lácteos',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.7,
       stock: 8,
       unit: 'docena',
     ),
     Product(
+      'Arroz 5kg',
       id: 4,
       name: 'Arroz 5kg',
       description: 'Arroz grano largo premium',
       price: 8.90,
       originalPrice: 9.50,
       category: 'Enlatados',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.8,
       stock: 12,
       unit: 'bolsa',
     ),
     Product(
+      'Aceite Vegetal 1L',
       id: 5,
       name: 'Aceite Vegetal 1L',
       description: 'Aceite de girasol',
       price: 4.30,
       originalPrice: 4.80,
       category: 'Enlatados',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.3,
       stock: 25,
       unit: 'botella',
     ),
     Product(
+      'Jugo de Naranja 1L',
       id: 6,
       name: 'Jugo de Naranja 1L',
       description: 'Jugo 100% natural',
       price: 3.50,
       originalPrice: 3.90,
       category: 'Bebidas',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: true,
-      rating: 4.4,
       stock: 18,
       unit: 'caja',
     ),
     Product(
+      'Galletas de Chocolate',
       id: 7,
       name: 'Galletas de Chocolate',
       description: 'Galletas con chispas de chocolate',
       price: 2.20,
       originalPrice: 2.50,
       category: 'Snacks',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.6,
       stock: 30,
       unit: 'paquete',
     ),
     Product(
+      'Detergente Líquido 2L',
       id: 8,
       name: 'Detergente Líquido 2L',
       description: 'Detergente para ropa',
       price: 6.80,
       originalPrice: 7.50,
       category: 'Limpieza',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.5,
       stock: 10,
       unit: 'botella',
     ),
     Product(
+      'Pechuga de Pollo 1kg',
       id: 9,
       name: 'Pechuga de Pollo 1kg',
       description: 'Pechuga de pollo fresca',
       price: 7.90,
       originalPrice: 8.50,
       category: 'Carnes',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.7,
       stock: 6,
       unit: 'kg',
     ),
     Product(
+      'Yogurt Natural 1kg',
       id: 10,
       name: 'Yogurt Natural 1kg',
       description: 'Yogurt natural sin azúcar',
       price: 3.80,
       originalPrice: 4.20,
       category: 'Lácteos',
-      imageUrl: '',
+      storeName: 'Tienda 1',
+      storeCategory: 'Tienda 1',
+      image: [
+        'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+      ],
       isFavorite: false,
-      rating: 4.4,
       stock: 22,
       unit: 'pote',
     ),
@@ -388,38 +431,46 @@ class _StoreScreenState extends State<StoreScreen> {
   // Banner de la tienda
   Widget _buildStoreBanner() {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: widget.isOfficialStore
-              ? [const Color(0xFF05386B), const Color(0xFF1A5A9C)]
-              : [Colors.grey[800]!, Colors.grey[600]!],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
       child: Stack(
         children: [
+          // Imagen de fondo ocupando todo el banner
+          Positioned.fill(
+            child: Image.network(widget.storeImage.first, fit: BoxFit.cover),
+          ),
+
+          // Capa opcional para oscurecer y mejorar contraste del texto
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.4),
+                    Colors.black.withOpacity(0.2),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ),
+
           // Contenido del banner
           Positioned.fill(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  child: Icon(
-                    widget.isOfficialStore
-                        ? Icons.storefront_outlined
-                        : Icons.store_outlined,
-                    size: 40,
-                    color: const Color(0xFF05386B),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                // Container(
+                //   width: 80,
+                //   height: 80,
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(40),
+                //   ),
+                //   child: Center(
+                //     child: Icon(Icons.store, size: 40, color: Colors.grey[700]),
+                //   ),
+                // ),
+                // const SizedBox(height: 16),
                 Text(
                   widget.storeName,
                   style: const TextStyle(
@@ -432,7 +483,11 @@ class _StoreScreenState extends State<StoreScreen> {
                 const SizedBox(height: 8),
                 Text(
                   widget.storeCategory,
-                  style: TextStyle(color: Colors.grey[200], fontSize: 16),
+                  style: TextStyle(
+                    color: Colors.grey[200],
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 if (widget.isOfficialStore) ...[
                   const SizedBox(height: 8),
@@ -480,33 +535,6 @@ class _StoreScreenState extends State<StoreScreen> {
                   Text(
                     'Envío: \$${widget.isOfficialStore ? '0.00' : '1.50'}',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Rating en esquina inferior derecha
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.star, color: Colors.amber, size: 16),
-                  const SizedBox(width: 4),
-                  const Text(
-                    '4.7',
-                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -714,198 +742,211 @@ class _StoreScreenState extends State<StoreScreen> {
 
   // Tarjeta de producto
   Widget _buildProductCard(Product product) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailScreen(product: product),
           ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Imagen del producto
-              Container(
-                height: 120,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Imagen del producto
+                Container(
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 60,
+                      color: Colors.grey[400],
+                    ),
                   ),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 60,
-                    color: Colors.grey[400],
-                  ),
-                ),
-              ),
 
-              // Contenido
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Nombre y categoría
-                    Text(
-                      product.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Color(0xFF05386B),
-                        height: 1.2,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      product.category,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                    ),
-
-                    // Descripción
-                    const SizedBox(height: 2),
-                    Text(
-                      product.description,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    // Precio
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          '\$${product.price.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF05386B),
-                          ),
+                // Contenido
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Nombre y categoría
+                      Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Color(0xFF05386B),
+                          height: 1.2,
                         ),
-                        if (product.originalPrice != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Text(
-                              '\$${product.originalPrice!.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[500],
-                                decoration: TextDecoration.lineThrough,
-                              ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        product.category,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+
+                      // Descripción
+                      const SizedBox(height: 2),
+                      Text(
+                        product.description,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+
+                      // Precio
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            '\$${product.price.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF05386B),
                             ),
                           ),
-                      ],
-                    ),
+                          if (product.originalPrice != null)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: Text(
+                                '\$${product.originalPrice!.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[500],
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
 
-                    // Stock y unidad
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Text(
-                          '${product.stock} en stock',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: product.stock > 5
-                                ? Colors.green[600]
-                                : Colors.orange[600],
+                      // Stock y unidad
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Text(
+                            '${product.stock} en stock',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: product.stock > 5
+                                  ? Colors.green[600]
+                                  : Colors.orange[600],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '• ${product.unit}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
+                          const SizedBox(width: 8),
+                          Text(
+                            '• ${product.unit}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
 
-                    // Botón agregar
-                    const SizedBox(height: 4),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 36, // Constrain button height
-                      child: ElevatedButton(
-                        onPressed: () => _addToCart(product),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF6B00),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 0,
-                          ), // Reduce padding
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      // Botón agregar
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 36, // Constrain button height
+                        child: ElevatedButton(
+                          onPressed: () => _addToCart(product),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF6B00),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 0,
+                            ), // Reduce padding
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Agregar',
-                          style: TextStyle(
-                            fontSize: 13, // Slightly smaller font
-                            fontWeight: FontWeight.w600,
+                          child: const Text(
+                            'Agregar',
+                            style: TextStyle(
+                              fontSize: 13, // Slightly smaller font
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-
-          // Botón de favorito
-          Positioned(
-            top: 8,
-            right: 8,
-            child: IconButton(
-              icon: Icon(
-                product.isFavorite
-                    ? Icons.favorite
-                    : Icons.favorite_border_outlined,
-                color: product.isFavorite ? Colors.red : Colors.grey[600],
-              ),
-              onPressed: () => _toggleFavorite(product.id),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+              ],
             ),
-          ),
 
-          // Badge de oferta (si hay descuento)
-          if (product.originalPrice != null &&
-              product.originalPrice! > product.price)
+            // Botón de favorito
             Positioned(
               top: 8,
-              left: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF6B00),
-                  borderRadius: BorderRadius.circular(6),
+              right: 8,
+              child: IconButton(
+                icon: Icon(
+                  product.isFavorite
+                      ? Icons.favorite
+                      : Icons.favorite_border_outlined,
+                  color: product.isFavorite ? Colors.red : Colors.grey[600],
                 ),
-                child: Text(
-                  'OFERTA',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+                onPressed: () => _toggleFavorite(product.id),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ),
+
+            // Badge de oferta (si hay descuento)
+            if (product.originalPrice != null &&
+                product.originalPrice! > product.price)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF6B00),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'OFERTA',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1106,33 +1147,40 @@ class _CategoryFilterDelegate extends SliverPersistentHeaderDelegate {
 }
 
 // Modelo de producto
-class Product {
-  final int id;
-  final String name;
-  final String description;
-  final double price;
-  final double? originalPrice;
-  final String category;
-  final String imageUrl;
-  bool isFavorite;
-  final double rating;
-  final int stock;
-  final String unit;
+// class Product {
+//   final int id;
+//   final String name;
+//   final String description;
+//   final double price;
+//   final double? originalPrice;
+//   final String category;
+//   final String storeName;
+//   final String storeCategory;
+//   bool isFavorite;
+//   final double rating;
+//   final int stock;
+//   final String unit;
+//   final int salesCount;
+//   final int deliveryTime;
 
-  Product({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    this.originalPrice,
-    required this.category,
-    required this.imageUrl,
-    this.isFavorite = false,
-    this.rating = 0.0,
-    this.stock = 0,
-    required this.unit,
-  });
-}
+//   Product(
+//     String s, {
+//     required this.id,
+//     required this.name,
+//     required this.description,
+//     required this.price,
+//     this.originalPrice,
+//     required this.category,
+//     required this.storeName,
+//     required this.storeCategory,
+//     this.isFavorite = false,
+//     this.rating = 0.0,
+//     this.stock = 0,
+//     required this.unit,
+//     this.salesCount = 0,
+//     this.deliveryTime = 20,
+//   });
+// }
 
 // Clase para responsividad
 class ResponsiveLayout {

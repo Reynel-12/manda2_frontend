@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:manda2_frontend/view/carrito_screen.dart' hide Product;
+import 'package:manda2_frontend/view/favorite_screen.dart'
+    hide Product, StoreScreen, ProductDetailScreen;
+import 'package:manda2_frontend/view/order_history_screen.dart';
 import 'package:manda2_frontend/view/order_tracking_screen.dart';
-import 'package:manda2_frontend/view/producto_details.dart';
-import 'package:manda2_frontend/view/tienda.dart' hide Product;
+import 'package:manda2_frontend/view/promotion_screen.dart'
+    hide Product, ProductDetailScreen;
+import 'package:manda2_frontend/view/tienda.dart';
 
 // Pantalla Home
 class HomeScreen extends StatefulWidget {
@@ -26,74 +30,80 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final List<Store> featuredStores = [
-    Store('Pulpería "El Buen Precio"', '⭐ 4.8', '15-20 min', 'Supermercado'),
-    Store('Restaurante "Sabor Local"', '⭐ 4.9', '20-25 min', 'Restaurante'),
-    Store('Farmacia "Salud Total"', '⭐ 4.7', '10-15 min', 'Farmacia'),
-    Store('Licorería "La Bodega"', '⭐ 4.6', '15-20 min', 'Licorería'),
+    Store('Pulpería "El Buen Precio"', '15-20 min', '4.5', 'Supermercado'),
+    Store('Restaurante "Sabor Local"', '20-25 min', '4.3', 'Restaurante'),
+    Store('Farmacia "Salud Total"', '10-15 min', '4.2', 'Farmacia'),
+    Store('Licorería "La Bodega"', '15-20 min', '4.4', 'Licorería'),
   ];
 
-  final List<Product> products = [
-    Product(
-      'Leche Entera 1L',
-      id: 1,
-      name: 'Leche Entera 1L',
-      description: '',
-      price: 2.50,
-      category: 'Supermercado',
-      storeName: 'Pulpería "El Buen Precio"',
-      storeCategory: 'Supermercado',
-      unit: '1L',
-      stock: 10,
-    ),
-    Product(
-      'Pan Integral',
-      id: 2,
-      name: 'Pan Integral',
-      description: 'Pan integral de 500g',
-      price: 1.75,
-      category: 'Supermercado',
-      storeName: 'Pulpería "El Buen Precio"',
-      storeCategory: 'Supermercado',
-      unit: '500g',
-      stock: 10,
-    ),
-    Product(
-      'Huevos x12',
-      id: 3,
-      name: 'Huevos x12',
-      description: 'Huevos x12',
-      price: 3.20,
-      category: 'Supermercado',
-      storeName: 'Pulpería "El Buen Precio"',
-      storeCategory: 'Supermercado',
-      unit: '12',
-      stock: 10,
-    ),
-    Product(
-      'Arroz 5kg',
-      id: 4,
-      name: 'Arroz 5kg',
-      description: 'Arroz 5kg',
-      price: 8.90,
-      category: 'Supermercado',
-      storeName: 'Pulpería "El Buen Precio"',
-      storeCategory: 'Supermercado',
-      unit: '5kg',
-      stock: 10,
-    ),
-    Product(
-      'Aceite Vegetal 1L',
-      id: 5,
-      name: 'Aceite Vegetal 1L',
-      description: 'Aceite vegetal 1L',
-      price: 4.30,
-      category: 'Supermercado',
-      storeName: 'Pulpería "El Buen Precio"',
-      storeCategory: 'Supermercado',
-      unit: '1L',
-      stock: 10,
-    ),
+  final List<String> storeImages = [
+    'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+    'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
+    'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
   ];
+
+  // final List<Product> products = [
+  //   Product(
+  //     'Leche Entera 1L',
+  //     id: 1,
+  //     name: 'Leche Entera 1L',
+  //     description: '',
+  //     price: 2.50,
+  //     category: 'Supermercado',
+  //     storeName: 'Pulpería "El Buen Precio"',
+  //     storeCategory: 'Supermercado',
+  //     unit: '1L',
+  //     stock: 10,
+  //   ),
+  //   Product(
+  //     'Pan Integral',
+  //     id: 2,
+  //     name: 'Pan Integral',
+  //     description: 'Pan integral de 500g',
+  //     price: 1.75,
+  //     category: 'Supermercado',
+  //     storeName: 'Pulpería "El Buen Precio"',
+  //     storeCategory: 'Supermercado',
+  //     unit: '500g',
+  //     stock: 10,
+  //   ),
+  //   Product(
+  //     'Huevos x12',
+  //     id: 3,
+  //     name: 'Huevos x12',
+  //     description: 'Huevos x12',
+  //     price: 3.20,
+  //     category: 'Supermercado',
+  //     storeName: 'Pulpería "El Buen Precio"',
+  //     storeCategory: 'Supermercado',
+  //     unit: '12',
+  //     stock: 10,
+  //   ),
+  //   Product(
+  //     'Arroz 5kg',
+  //     id: 4,
+  //     name: 'Arroz 5kg',
+  //     description: 'Arroz 5kg',
+  //     price: 8.90,
+  //     category: 'Supermercado',
+  //     storeName: 'Pulpería "El Buen Precio"',
+  //     storeCategory: 'Supermercado',
+  //     unit: '5kg',
+  //     stock: 10,
+  //   ),
+  //   Product(
+  //     'Aceite Vegetal 1L',
+  //     id: 5,
+  //     name: 'Aceite Vegetal 1L',
+  //     description: 'Aceite vegetal 1L',
+  //     price: 4.30,
+  //     category: 'Supermercado',
+  //     storeName: 'Pulpería "El Buen Precio"',
+  //     storeCategory: 'Supermercado',
+  //     unit: '1L',
+  //     stock: 10,
+  //   ),
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -198,8 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
 
               // Productos populares
-              _buildProductsSection(),
-              const SizedBox(height: 20),
+              // _buildProductsSection(),
+              // const SizedBox(height: 20),
             ],
           ),
         ),
@@ -268,20 +278,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildDrawerItem(
                   Icons.history_outlined,
                   'Historial de Pedidos',
-                  () {},
+                  () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OrderHistoryScreen(),
+                      ),
+                    );
+                  },
                 ),
-                _buildDrawerItem(Icons.favorite_outline, 'Favoritos', () {}),
-                _buildDrawerItem(
-                  Icons.payment_outlined,
-                  'Métodos de Pago',
-                  () {},
-                ),
-                _buildDrawerItem(
-                  Icons.local_offer_outlined,
-                  'Promociones',
-                  () {},
-                ),
-                _buildDrawerItem(Icons.help_outline, 'Ayuda', () {}),
+                _buildDrawerItem(Icons.favorite_outline, 'Favoritos', () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FavoritesScreen()),
+                  );
+                }),
+                // _buildDrawerItem(
+                //   Icons.payment_outlined,
+                //   'Métodos de Pago',
+                //   () {},
+                // ),
+                _buildDrawerItem(Icons.local_offer_outlined, 'Promociones', () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PromotionsScreen(),
+                    ),
+                  );
+                }),
+                // _buildDrawerItem(Icons.help_outline, 'Ayuda', () {}),
                 _buildDrawerItem(
                   Icons.settings_outlined,
                   'Configuración',
@@ -371,10 +399,11 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const StoreScreen(
+                builder: (context) => StoreScreen(
                   storeName: 'Pulpería Oficial',
                   storeCategory: 'Pulpería',
                   isOfficialStore: true,
+                  storeImage: storeImages,
                 ),
               ),
             );
@@ -385,15 +414,20 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Container(
+                  width: 80,
+                  height: 80,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
-                    Icons.storefront_outlined,
-                    color: Color(0xFF05386B),
-                    size: 32,
+                  child: Center(
+                    child: Image.network(
+                      storeImages.first,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -556,17 +590,33 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        SizedBox(
-          height: 240,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: featuredStores.length,
-            itemBuilder: (context, index) {
-              final store = featuredStores[index];
-              return _buildStoreCard(store);
-            },
+        const SizedBox(height: 12),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 0.6,
           ),
+          itemCount: featuredStores.length,
+          itemBuilder: (context, index) {
+            final store = featuredStores[index];
+            return _buildStoreCard(store);
+          },
         ),
+        // SizedBox(
+        //   height: 240,
+        //   child: ListView.builder(
+        //     scrollDirection: Axis.vertical,
+        //     itemCount: featuredStores.length,
+        //     itemBuilder: (context, index) {
+        //       final store = featuredStores[index];
+        //       return _buildStoreCard(store);
+        //     },
+        //   ),
+        // ),
       ],
     );
   }
@@ -581,6 +631,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context) => StoreScreen(
               storeName: store.name,
               storeCategory: store.category,
+              storeImage: storeImages,
             ),
           ),
         );
@@ -613,10 +664,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               child: Center(
-                child: Icon(
-                  Icons.store_outlined,
-                  size: 50,
-                  color: Colors.grey[400],
+                child: Image.network(
+                  storeImages.first,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -644,6 +696,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
+                            const Icon(Icons.star, color: Color(0xFFFF6B00)),
                             Text(
                               store.rating,
                               style: TextStyle(
@@ -692,162 +745,162 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Sección de productos
-  Widget _buildProductsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Productos Populares',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF05386B),
-          ),
-        ),
-        const SizedBox(height: 12),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.6,
-          ),
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            final product = products[index];
-            return _buildProductCard(product);
-          },
-        ),
-      ],
-    );
-  }
+  // Widget _buildProductsSection() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       const Text(
+  //         'Productos Populares',
+  //         style: TextStyle(
+  //           fontSize: 22,
+  //           fontWeight: FontWeight.bold,
+  //           color: Color(0xFF05386B),
+  //         ),
+  //       ),
+  //       const SizedBox(height: 12),
+  //       GridView.builder(
+  //         shrinkWrap: true,
+  //         physics: const NeverScrollableScrollPhysics(),
+  //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+  //           crossAxisCount: 2,
+  //           crossAxisSpacing: 16,
+  //           mainAxisSpacing: 16,
+  //           childAspectRatio: 0.6,
+  //         ),
+  //         itemCount: products.length,
+  //         itemBuilder: (context, index) {
+  //           final product = products[index];
+  //           return _buildProductCard(product);
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // Tarjeta de producto
-  Widget _buildProductCard(Product product) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetailScreen(product: product),
-          ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Imagen del producto
-            Container(
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.shopping_bag_outlined,
-                  size: 60,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ),
-            // Información del producto
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Color(0xFF05386B),
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          product.price.toString(),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF05386B),
-                          ),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Agregar al carrito
-                        setState(() {
-                          _cartItemCount++;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${product.name} agregado al carrito',
-                            ),
-                            backgroundColor: const Color(0xFF05386B),
-                            action: SnackBarAction(
-                              label: 'Deshacer',
-                              textColor: Colors.white,
-                              onPressed: () {
-                                setState(() {
-                                  _cartItemCount--;
-                                });
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF6B00),
-                        minimumSize: const Size(double.infinity, 36),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Agregar',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildProductCard(Product product) {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => ProductDetailScreen(product: product),
+  //         ),
+  //       );
+  //     },
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.circular(16),
+  //         boxShadow: [
+  //           BoxShadow(
+  //             color: Colors.grey.withOpacity(0.1),
+  //             blurRadius: 10,
+  //             spreadRadius: 2,
+  //           ),
+  //         ],
+  //       ),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           // Imagen del producto
+  //           Container(
+  //             height: 120,
+  //             decoration: BoxDecoration(
+  //               color: Colors.grey[100],
+  //               borderRadius: const BorderRadius.only(
+  //                 topLeft: Radius.circular(16),
+  //                 topRight: Radius.circular(16),
+  //               ),
+  //             ),
+  //             child: Center(
+  //               child: Icon(
+  //                 Icons.shopping_bag_outlined,
+  //                 size: 60,
+  //                 color: Colors.grey[400],
+  //               ),
+  //             ),
+  //           ),
+  //           // Información del producto
+  //           Expanded(
+  //             child: Padding(
+  //               padding: const EdgeInsets.all(12),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   Column(
+  //                     crossAxisAlignment: CrossAxisAlignment.start,
+  //                     children: [
+  //                       Text(
+  //                         product.name,
+  //                         style: const TextStyle(
+  //                           fontWeight: FontWeight.bold,
+  //                           fontSize: 14,
+  //                           color: Color(0xFF05386B),
+  //                         ),
+  //                         maxLines: 2,
+  //                         overflow: TextOverflow.ellipsis,
+  //                       ),
+  //                       const SizedBox(height: 8),
+  //                       Text(
+  //                         product.price.toString(),
+  //                         style: const TextStyle(
+  //                           fontSize: 18,
+  //                           fontWeight: FontWeight.bold,
+  //                           color: Color(0xFF05386B),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   ElevatedButton(
+  //                     onPressed: () {
+  //                       // Agregar al carrito
+  //                       setState(() {
+  //                         _cartItemCount++;
+  //                       });
+  //                       ScaffoldMessenger.of(context).showSnackBar(
+  //                         SnackBar(
+  //                           content: Text(
+  //                             '${product.name} agregado al carrito',
+  //                           ),
+  //                           backgroundColor: const Color(0xFF05386B),
+  //                           action: SnackBarAction(
+  //                             label: 'Deshacer',
+  //                             textColor: Colors.white,
+  //                             onPressed: () {
+  //                               setState(() {
+  //                                 _cartItemCount--;
+  //                               });
+  //                             },
+  //                           ),
+  //                         ),
+  //                       );
+  //                     },
+  //                     style: ElevatedButton.styleFrom(
+  //                       backgroundColor: const Color(0xFFFF6B00),
+  //                       minimumSize: const Size(double.infinity, 36),
+  //                       shape: RoundedRectangleBorder(
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                     ),
+  //                     child: const Text(
+  //                       'Agregar',
+  //                       style: TextStyle(
+  //                         fontSize: 14,
+  //                         fontWeight: FontWeight.w600,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // Barra de navegación inferior
   Widget _buildBottomNavigationBar() {
@@ -918,11 +971,11 @@ class Category {
 
 class Store {
   final String name;
-  final String rating;
   final String deliveryTime;
+  final String rating;
   final String category;
 
-  Store(this.name, this.rating, this.deliveryTime, this.category);
+  Store(this.name, this.deliveryTime, this.rating, this.category);
 }
 
 // class Product {

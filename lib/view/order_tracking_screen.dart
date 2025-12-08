@@ -618,19 +618,19 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   color: Color(0xFF05386B),
                 ),
               ),
-              Row(
-                children: [
-                  const Icon(Icons.star, color: Colors.amber, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    _deliveryPerson!.rating.toString(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF05386B),
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     const Icon(Icons.star, color: Colors.amber, size: 16),
+              //     const SizedBox(width: 4),
+              //     Text(
+              //       _deliveryPerson!.rating.toString(),
+              //       style: const TextStyle(
+              //         fontWeight: FontWeight.w600,
+              //         color: Color(0xFF05386B),
+              //       ),
+              //     ),
+              //   ],
+              // ),
             ],
           ),
 
