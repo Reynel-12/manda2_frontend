@@ -675,7 +675,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Lista horizontal de promociones
         SizedBox(
-          height: 160,
+          height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
