@@ -382,15 +382,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 //   'Métodos de Pago',
                 //   () {},
                 // ),
-                _buildDrawerItem(Icons.local_offer_outlined, 'Promociones', () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PromotionsScreen(),
-                    ),
-                  );
-                }),
+                // _buildDrawerItem(Icons.local_offer_outlined, 'Promociones', () {
+                //   Navigator.pop(context);
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const PromotionsScreen(),
+                //     ),
+                //   );
+                // }),
                 // _buildDrawerItem(Icons.help_outline, 'Ayuda', () {}),
                 _buildDrawerItem(
                   Icons.settings_outlined,
@@ -769,7 +769,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     promotion.description,
                     style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -1451,6 +1451,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () => _copyPromoCode('PROMO${promotion.id}'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF6B00),
+                        minimumSize: const Size(0, 50),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 16,

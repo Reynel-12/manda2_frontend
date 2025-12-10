@@ -865,7 +865,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 class OrderDetailScreen extends StatelessWidget {
   final Order order;
 
-  const OrderDetailScreen({Key? key, required this.order}) : super(key: key);
+  const OrderDetailScreen({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
