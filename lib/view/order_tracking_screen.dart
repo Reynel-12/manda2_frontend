@@ -251,8 +251,10 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             // Chat opcional
             if (_isChatVisible) _buildChatSection(),
 
+            // _buildLocationMap(),
+
             // Espacio para el botón flotante
-            const SizedBox(height: 80),
+            // const SizedBox(height: 80),
           ],
         ),
       ),
@@ -1031,25 +1033,24 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: _currentStatus == OrderStatus.delivered
-              ? SizedBox.shrink()
-              // ElevatedButton(
-              //     onPressed: () {
-              //       // Calificar el servicio
-              //       _showRatingDialog();
-              //     },
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: const Color(0xFFFF6B00),
-              //       foregroundColor: Colors.white,
-              //       minimumSize: const Size(double.infinity, 56),
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(12),
-              //       ),
-              //     ),
-              //     child: const Text(
-              //       'Calificar el Servicio',
-              //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              //     ),
-              //   )
+              ? ElevatedButton(
+                  onPressed: () {
+                    // Calificar el servicio
+                    _showRatingDialog();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6B00),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Calificar el Servicio',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                )
               : Row(
                   children: [
                     Expanded(

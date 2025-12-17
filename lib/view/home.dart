@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manda2_frontend/view/carrito_screen.dart' hide Product;
+import 'package:manda2_frontend/view/configuracion_screen.dart';
 import 'package:manda2_frontend/view/favorite_screen.dart'
     hide Product, StoreScreen, ProductDetailScreen;
 import 'package:manda2_frontend/view/order_history_screen.dart';
@@ -183,6 +184,53 @@ class _HomeScreenState extends State<HomeScreen> {
   //   ),
   // ];
 
+  void _showAddressDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Seleccionar Dirección'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.home_outlined),
+                title: const Text('Casa'),
+                onTap: () {
+                  // Acción para casa
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.work_outlined),
+                title: const Text('Trabajo'),
+                onTap: () {
+                  // Acción para trabajo
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Agregar Dirección'),
+              onPressed: () {
+                // Acción para agregar dirección
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,6 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: const Icon(Icons.arrow_drop_down),
                   onPressed: () {
                     // Cambiar dirección
+                    _showAddressDialog();
                   },
                 ),
               ],
@@ -392,11 +441,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 //   );
                 // }),
                 // _buildDrawerItem(Icons.help_outline, 'Ayuda', () {}),
-                _buildDrawerItem(
-                  Icons.settings_outlined,
-                  'Configuración',
-                  () {},
-                ),
+                _buildDrawerItem(Icons.settings_outlined, 'Configuración', () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                }),
                 const Divider(),
                 _buildDrawerItem(
                   Icons.logout_outlined,
@@ -1180,10 +1233,10 @@ class _HomeScreenState extends State<HomeScreen> {
             activeIcon: Icon(Icons.home),
             label: 'Inicio',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            label: 'Buscar',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.search_outlined),
+          //   label: 'Buscar',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long_outlined),
             label: 'Pedidos',
@@ -1195,7 +1248,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         onTap: (index) {
           // Navegación
-          if (index == 2) {
+          // if (index == 0) {
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => const HomeScreen()),
+          //   );
+          // } else
+          if (index == 1) {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -1205,6 +1264,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   totalAmount: 100.0,
                 ),
               ),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsScreen()),
             );
           }
         },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manda2_frontend/view/create_account_screen.dart';
+import 'package:manda2_frontend/view/delivery_home.dart';
 import 'package:manda2_frontend/view/home.dart';
 
 // Pantalla de Login
@@ -155,13 +156,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
-                    // Lógica de login
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    );
+                    if (_emailController.text.trim() == 'Repartidor') {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DeliveryHomeScreen(),
+                        ),
+                      );
+                    } else {
+                      // Lógica de login
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                      );
+                    }
                   },
                   child: const Text('Iniciar Sesión'),
                 ),
