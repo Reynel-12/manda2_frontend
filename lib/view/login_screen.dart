@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/bussines_dashboard.dart';
 import 'package:manda2_frontend/view/create_account_screen.dart';
 import 'package:manda2_frontend/view/delivery_home.dart';
 import 'package:manda2_frontend/view/home.dart';
@@ -161,6 +162,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const DeliveryHomeScreen(),
+                        ),
+                      );
+                    } else if (_emailController.text.trim() == 'Negocio') {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BusinessDashboardScreen(),
                         ),
                       );
                     } else {

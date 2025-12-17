@@ -313,11 +313,11 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
       ),
 
       // Botones de acción flotantes
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: canTakeAction ? _buildActionButtons() : null,
 
       // Barra inferior con información adicional
-      bottomNavigationBar: _buildBottomInfoBar(),
+      // bottomNavigationBar: _buildBottomInfoBar(),
     );
   }
 
@@ -414,21 +414,21 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
     );
   }
 
-  bool _isStepActive(OrderStatus status) {
-    final order = _order!;
-    switch (status) {
-      case OrderStatus.assigned:
-        return true; // Siempre activo
-      case OrderStatus.accepted:
-        return order.status.index >= OrderStatus.accepted.index;
-      case OrderStatus.pickedUp:
-        return order.status.index >= OrderStatus.pickedUp.index;
-      case OrderStatus.delivered:
-        return order.status == OrderStatus.delivered;
-      default:
-        return false;
-    }
-  }
+  // bool _isStepActive(OrderStatus status) {
+  //   final order = _order!;
+  //   switch (status) {
+  //     case OrderStatus.assigned:
+  //       return true; // Siempre activo
+  //     case OrderStatus.accepted:
+  //       return order.status.index >= OrderStatus.accepted.index;
+  //     case OrderStatus.pickedUp:
+  //       return order.status.index >= OrderStatus.pickedUp.index;
+  //     case OrderStatus.delivered:
+  //       return order.status == OrderStatus.delivered;
+  //     default:
+  //       return false;
+  //   }
+  // }
 
   IconData _getStepIcon(OrderStatus status) {
     switch (status) {
@@ -871,7 +871,7 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
                 borderRadius: BorderRadius.circular(8),
                 image: const DecorationImage(
                   image: NetworkImage(
-                    'https://via.placeholder.com/600x150/05386B/FFFFFF?text=Mapa+de+Ruta',
+                    'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
                   ),
                   fit: BoxFit.cover,
                 ),
@@ -1309,6 +1309,48 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
             'Tu ganancia',
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    final order = _order!;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: 0,
+        type: BottomNavigationBarType.shifting,
+        selectedItemColor: const Color(0xFFFF6B00),
+        unselectedItemColor: Colors.grey[600],
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.access_time_outlined),
+            activeIcon: Icon(Icons.access_time),
+            label: '${order.estimatedDeliveryTime} min\nTiempo estimado',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_outlined),
+            activeIcon: Icon(Icons.directions),
+            label: '${order.distance} km\nDistancia',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.attach_money_outlined),
+            activeIcon: Icon(Icons.attach_money),
+            label: '\$${order.deliveryFee.toStringAsFixed(2)}\nTu ganancia',
+          ),
+        ],
+        // onTap: (index) {},
       ),
     );
   }
