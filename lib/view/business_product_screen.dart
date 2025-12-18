@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/business_add_product.dart';
 
 class BusinessProductsScreen extends StatefulWidget {
   const BusinessProductsScreen({Key? key}) : super(key: key);
@@ -12,9 +13,8 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
   String _selectedCategory = 'Todos';
   String _selectedAvailability = 'Todos';
   bool _isGridView = false;
-  bool _isLoading = false;
 
-  final List<String> _categories = [
+  List<String> _categories = [
     'Todos',
     'Lácteos',
     'Panadería',
@@ -205,16 +205,6 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
     });
   }
 
-  void _addNewProduct() {
-    _clearForm();
-    _showProductDialog(isEditing: false);
-  }
-
-  void _editProduct(BusinessProduct product) {
-    _fillForm(product);
-    _showProductDialog(isEditing: true, product: product);
-  }
-
   void _toggleProductAvailability(String productId) {
     final productIndex = _products.indexWhere(
       (product) => product.id == productId,
@@ -313,366 +303,6 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
         ),
       );
     }
-  }
-
-  void _clearForm() {
-    _nameController.clear();
-    _descriptionController.clear();
-    _priceController.clear();
-    _stockController.clear();
-    _unitController.clear();
-  }
-
-  void _fillForm(BusinessProduct product) {
-    _nameController.text = product.name;
-    _descriptionController.text = product.description;
-    _priceController.text = product.price.toString();
-    _stockController.text = product.stock.toString();
-    _unitController.text = product.unit;
-  }
-
-  void _showProductDialog({required bool isEditing, BusinessProduct? product}) {
-    String? selectedCategory = isEditing ? product?.category : null;
-    bool isAvailable = isEditing ? product?.isAvailable ?? true : true;
-    bool isFeatured = isEditing ? product?.isFeatured ?? false : false;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(
-                isEditing ? 'Editar Producto' : 'Agregar Producto',
-                style: const TextStyle(
-                  color: Color(0xFF05386B),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Imágenes del producto
-                    _buildImageUploadSection(isEditing, product),
-
-                    const SizedBox(height: 16),
-
-                    // Nombre del producto
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre del producto',
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF05386B),
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa el nombre';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Descripción
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Descripción',
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF05386B),
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      maxLines: 3,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Categoría
-                    DropdownButtonFormField<String>(
-                      value: selectedCategory,
-                      decoration: const InputDecoration(
-                        labelText: 'Categoría',
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF05386B),
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      items: _categories.where((cat) => cat != 'Todos').map((
-                        category,
-                      ) {
-                        return DropdownMenuItem<String>(
-                          value: category,
-                          child: Text(category),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCategory = value;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor selecciona una categoría';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Precio y stock
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _priceController,
-                            decoration: const InputDecoration(
-                              labelText: 'Precio (\$)',
-                              border: OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xFF05386B),
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Ingresa el precio';
-                              }
-                              if (double.tryParse(value) == null) {
-                                return 'Precio inválido';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _stockController,
-                            decoration: const InputDecoration(
-                              labelText: 'Stock',
-                              border: OutlineInputBorder(),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xFF05386B),
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Ingresa el stock';
-                              }
-                              if (int.tryParse(value) == null) {
-                                return 'Stock inválido';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Unidad de medida
-                    TextFormField(
-                      controller: _unitController,
-                      decoration: const InputDecoration(
-                        labelText: 'Unidad (kg, litro, unidad, etc.)',
-                        border: OutlineInputBorder(),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF05386B),
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa la unidad';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Opciones adicionales
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isAvailable,
-                          onChanged: (value) {
-                            setState(() {
-                              isAvailable = value ?? true;
-                            });
-                          },
-                          activeColor: const Color(0xFF05386B),
-                        ),
-                        const Text('Disponible'),
-
-                        const SizedBox(width: 20),
-
-                        Checkbox(
-                          value: isFeatured,
-                          onChanged: (value) {
-                            setState(() {
-                              isFeatured = value ?? false;
-                            });
-                          },
-                          activeColor: const Color(0xFFFF6B00),
-                        ),
-                        const Text('Destacado'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    'Cancelar',
-                    style: TextStyle(color: Color(0xFF05386B)),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_nameController.text.isNotEmpty &&
-                        selectedCategory != null &&
-                        _priceController.text.isNotEmpty &&
-                        _stockController.text.isNotEmpty &&
-                        _unitController.text.isNotEmpty) {
-                      final newProduct = BusinessProduct(
-                        id: isEditing
-                            ? product!.id
-                            : DateTime.now().millisecondsSinceEpoch.toString(),
-                        name: _nameController.text,
-                        description: _descriptionController.text,
-                        price: double.parse(_priceController.text),
-                        category: selectedCategory!,
-                        unit: _unitController.text,
-                        stock: int.parse(_stockController.text),
-                        isAvailable: isAvailable,
-                        images: [],
-                        rating: isEditing ? product?.rating ?? 4.0 : 4.0,
-                        salesCount: isEditing ? product?.salesCount ?? 0 : 0,
-                        createdAt: isEditing
-                            ? product!.createdAt
-                            : DateTime.now(),
-                        isFeatured: isFeatured,
-                      );
-
-                      if (isEditing) {
-                        final productIndex = _products.indexWhere(
-                          (p) => p.id == product!.id,
-                        );
-                        if (productIndex != -1) {
-                          setState(() {
-                            _products[productIndex] = newProduct;
-                          });
-                        }
-                      } else {
-                        setState(() {
-                          _products.insert(0, newProduct);
-                        });
-                      }
-
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isEditing
-                                ? 'Producto actualizado'
-                                : 'Producto agregado',
-                          ),
-                          backgroundColor: const Color(0xFF05386B),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Por favor completa todos los campos obligatorios',
-                          ),
-                          backgroundColor: Colors.orange,
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF6B00),
-                  ),
-                  child: Text(isEditing ? 'Actualizar' : 'Agregar'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildImageUploadSection(bool isEditing, BusinessProduct? product) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Imágenes del producto',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF05386B),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.camera_alt_outlined,
-                  color: Color(0xFF05386B),
-                  size: 30,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  isEditing ? 'Cambiar imágenes' : 'Agregar imágenes',
-                  style: const TextStyle(color: Color(0xFF05386B)),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   void _showImageUploadDialog(String productId) {
@@ -780,7 +410,13 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
           // Botón para agregar producto
           IconButton(
             icon: const Icon(Icons.add_circle_outlined),
-            onPressed: _addNewProduct,
+            // onPressed: _addNewProduct,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductFormScreen()),
+              );
+            },
             tooltip: 'Agregar producto',
           ),
         ],
@@ -805,12 +441,18 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
       ),
 
       // Botón flotante para agregar producto
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _addNewProduct,
-        backgroundColor: const Color(0xFFFF6B00),
-        icon: const Icon(Icons.add),
-        label: const Text('Agregar Producto'),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   // onPressed: _addNewProduct,
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => ProductFormScreen()),
+      //     );
+      //   },
+      //   backgroundColor: const Color(0xFFFF6B00),
+      //   icon: const Icon(Icons.add),
+      //   label: const Text('Agregar Producto'),
+      // ),
     );
   }
 
@@ -825,13 +467,26 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Filtrar Productos',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF05386B),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Filtrar Productos',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF05386B),
+                ),
+              ),
+              IconButton(
+                onPressed: _showManageCategoriesDialog,
+                icon: const Icon(Icons.settings_outlined, size: 20),
+                color: const Color(0xFF05386B),
+                tooltip: 'Gestionar categorías',
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.zero,
+              ),
+            ],
           ),
 
           const SizedBox(height: 12),
@@ -1100,6 +755,142 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
     );
   }
 
+  void _showAddCategoryDialog({Function(String)? onAdded}) {
+    final TextEditingController categoryController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Nueva Categoría',
+          style: TextStyle(
+            color: Color(0xFF05386B),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: TextField(
+          controller: categoryController,
+          decoration: const InputDecoration(
+            labelText: 'Nombre de la categoría',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final name = categoryController.text.trim();
+              if (name.isNotEmpty) {
+                if (!_categories.contains(name)) {
+                  setState(() {
+                    _categories.add(name);
+                  });
+                  if (onAdded != null) onAdded(name);
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('La categoría ya existe')),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF6B00),
+            ),
+            child: const Text('Agregar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showManageCategoriesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text(
+            'Gestionar Categorías',
+            style: TextStyle(
+              color: Color(0xFF05386B),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _categories.length,
+                    itemBuilder: (context, index) {
+                      final category = _categories[index];
+                      if (category == 'Todos') return const SizedBox.shrink();
+                      return ListTile(
+                        title: Text(category),
+                        trailing: IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            // Verificar si hay productos usando esta categoría
+                            final hasProducts = _products.any(
+                              (p) => p.category == category,
+                            );
+                            if (hasProducts) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'No se puede eliminar una categoría en uso',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                            setState(() {
+                              _categories.removeAt(index);
+                            });
+                            setDialogState(() {});
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.add, color: Color(0xFFFF6B00)),
+                  title: const Text(
+                    'Agregar nueva categoría',
+                    style: TextStyle(color: Color(0xFFFF6B00)),
+                  ),
+                  onTap: () => _showAddCategoryDialog(
+                    onAdded: (_) => setDialogState(() {}),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cerrar',
+                style: TextStyle(color: Color(0xFF05386B)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Lista de productos
   Widget _buildProductsList(bool isTablet) {
     return ListView.builder(
@@ -1350,7 +1141,14 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
                       Icons.edit_outlined,
                       color: Color(0xFF05386B),
                     ),
-                    onPressed: () => _editProduct(product),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductFormScreen(),
+                        ),
+                      );
+                    },
                     tooltip: 'Editar',
                     constraints: const BoxConstraints(),
                     padding: const EdgeInsets.all(8),

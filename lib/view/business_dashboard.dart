@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/business_finance_screen.dart';
 import 'package:manda2_frontend/view/business_product_screen.dart';
+import 'package:manda2_frontend/view/business_settings.dart';
 
 class BusinessDashboardScreen extends StatefulWidget {
   const BusinessDashboardScreen({Key? key}) : super(key: key);
@@ -1702,48 +1704,6 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen> {
     );
   }
 
-  // Navegación inferior
-  // Widget _buildBottomNavigationBar() {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.grey.withOpacity(0.2),
-  //           blurRadius: 10,
-  //           spreadRadius: 2,
-  //         ),
-  //       ],
-  //     ),
-  //     child: SafeArea(
-  //       child: Padding(
-  //         padding: const EdgeInsets.symmetric(vertical: 8),
-  //         child: Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //           children: [
-  //             _buildBottomNavItem(Icons.dashboard_outlined, 'Dashboard', true),
-  //             _buildBottomNavItem(
-  //               Icons.shopping_bag_outlined,
-  //               'Productos',
-  //               false,
-  //             ),
-  //             _buildBottomNavItem(
-  //               Icons.attach_money_outlined,
-  //               'Finanzas',
-  //               false,
-  //             ),
-  //             _buildBottomNavItem(
-  //               Icons.settings_outlined,
-  //               'Configuración',
-  //               false,
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildBottomNavigationBar() {
     return Container(
       decoration: BoxDecoration(
@@ -1769,10 +1729,6 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen> {
             activeIcon: Icon(Icons.home),
             label: 'Dashboard',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.search_outlined),
-          //   label: 'Buscar',
-          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag_outlined),
             label: 'Productos',
@@ -1788,12 +1744,6 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen> {
         ],
         onTap: (index) {
           // Navegación
-          // if (index == 0) {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => const HomeScreen()),
-          //   );
-          // } else
           if (index == 1) {
             Navigator.push(
               context,
@@ -1801,30 +1751,23 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen> {
                 builder: (context) => const BusinessProductsScreen(),
               ),
             );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BusinessFinanceScreen(),
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BusinessSettingsScreen(),
+              ),
+            );
           }
         },
       ),
-    );
-  }
-
-  Widget _buildBottomNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFFFF6B00) : Colors.grey[600],
-          size: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isActive ? const Color(0xFFFF6B00) : Colors.grey[600],
-          ),
-        ),
-      ],
     );
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manda2_frontend/view/bussines_dashboard.dart';
+import 'package:manda2_frontend/view/business_dashboard.dart';
 import 'package:manda2_frontend/view/create_account_screen.dart';
 import 'package:manda2_frontend/view/delivery_home.dart';
 import 'package:manda2_frontend/view/home.dart';
