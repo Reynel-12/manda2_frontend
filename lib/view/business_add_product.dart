@@ -13,6 +13,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _discountPercentageController =
+      TextEditingController();
+  final TextEditingController _finalPriceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
   final TextEditingController _unitController = TextEditingController();
 
@@ -20,6 +23,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   String? _selectedUnit;
   bool _isAvailable = true;
   bool _isFeatured = false;
+  bool _hasDiscount = false;
   List<String> _productImages = [];
 
   final List<String> _categories = [
@@ -48,6 +52,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     _nameController.dispose();
     _descriptionController.dispose();
     _priceController.dispose();
+    _discountPercentageController.dispose();
+    _finalPriceController.dispose();
     _stockController.dispose();
     super.dispose();
   }
@@ -85,6 +91,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         _selectedUnit = null;
         _isAvailable = true;
         _isFeatured = false;
+        _hasDiscount = false;
+        _discountPercentageController.clear();
+        _finalPriceController.clear();
       });
     }
   }
@@ -236,8 +245,17 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                               controller: _priceController,
                               label: 'Precio (\$)',
                               hintText: '0.00',
-                              keyboardType: TextInputType.number,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
                               prefixText: '\$ ',
+                              onChanged: (value) {
+                                if (_hasDiscount)
+                                  _updateDiscountCalculations(
+                                    fromBasePrice: true,
+                                  );
+                              },
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Por favor ingresa el precio';
@@ -251,6 +269,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                                 return null;
                               },
                             ),
+
+                            // Sección de Descuento
+                            _buildDiscountSection(),
 
                             // Stock
                             _buildTextField(
@@ -435,6 +456,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     int maxLines = 1,
     TextInputType? keyboardType,
     String? prefixText,
+    void Function(String)? onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -455,13 +477,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             maxLines: maxLines,
             keyboardType: keyboardType,
             inputFormatters: keyboardType == TextInputType.number
-                ? [FilteringTextInputFormatter.digitsOnly]
+                ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))]
                 : null,
             decoration: InputDecoration(
               hintText: hintText,
               prefixText: prefixText,
             ),
             validator: validator,
+            onChanged: onChanged,
           ),
         ],
       ),
@@ -563,58 +586,178 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   Widget _buildPriceStockRow() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
       children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: _buildTextField(
-              controller: _priceController,
-              label: 'Precio (\$)',
-              hintText: '0.00',
-              keyboardType: TextInputType.number,
-              prefixText: '\$ ',
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor ingresa el precio';
-                }
-                if (double.tryParse(value) == null) {
-                  return 'Por favor ingresa un número válido';
-                }
-                if (double.parse(value) <= 0) {
-                  return 'El precio debe ser mayor a 0';
-                }
-                return null;
-              },
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: _buildTextField(
+                  controller: _priceController,
+                  label: 'Precio (\$)',
+                  hintText: '0.00',
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  prefixText: '\$ ',
+                  onChanged: (value) {
+                    if (_hasDiscount)
+                      _updateDiscountCalculations(fromBasePrice: true);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el precio';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Por favor ingresa un número válido';
+                    }
+                    if (double.parse(value) <= 0) {
+                      return 'El precio debe ser mayor a 0';
+                    }
+                    return null;
+                  },
+                ),
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: _buildTextField(
-              controller: _stockController,
-              label: 'Stock Disponible',
-              hintText: '0',
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor ingresa el stock disponible';
-                }
-                if (int.tryParse(value) == null) {
-                  return 'Por favor ingresa un número válido';
-                }
-                if (int.parse(value) < 0) {
-                  return 'El stock no puede ser negativo';
-                }
-                return null;
-              },
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: _buildTextField(
+                  controller: _stockController,
+                  label: 'Stock Disponible',
+                  hintText: '0',
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el stock disponible';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Por favor ingresa un número válido';
+                    }
+                    if (int.parse(value) < 0) {
+                      return 'El stock no puede ser negativo';
+                    }
+                    return null;
+                  },
+                ),
+              ),
             ),
-          ),
+          ],
         ),
+        _buildDiscountSection(),
       ],
     );
+  }
+
+  Widget _buildDiscountSection() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF05386B).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF05386B).withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(
+                    Icons.local_offer_outlined,
+                    color: Color(0xFF05386B),
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Aplicar Descuento',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF05386B),
+                    ),
+                  ),
+                ],
+              ),
+              Switch(
+                value: _hasDiscount,
+                activeColor: const Color(0xFFFF6B00),
+                onChanged: (value) {
+                  setState(() {
+                    _hasDiscount = value;
+                    if (!_hasDiscount) {
+                      _discountPercentageController.clear();
+                      _finalPriceController.clear();
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          if (_hasDiscount) ...[
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    controller: _discountPercentageController,
+                    label: 'Descuento (%)',
+                    hintText: '0',
+                    keyboardType: TextInputType.number,
+                    prefixText: '% ',
+                    onChanged: (value) =>
+                        _updateDiscountCalculations(fromPercentage: true),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildTextField(
+                    controller: _finalPriceController,
+                    label: 'Precio Final (\$)',
+                    hintText: '0.00',
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    prefixText: '\$ ',
+                    onChanged: (value) =>
+                        _updateDiscountCalculations(fromFinalPrice: true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _updateDiscountCalculations({
+    bool fromBasePrice = false,
+    bool fromPercentage = false,
+    bool fromFinalPrice = false,
+  }) {
+    double basePrice = double.tryParse(_priceController.text) ?? 0;
+    if (basePrice <= 0) return;
+
+    setState(() {
+      if (fromPercentage || fromBasePrice) {
+        double percentage =
+            double.tryParse(_discountPercentageController.text) ?? 0;
+        if (percentage > 100) percentage = 100;
+        double finalPrice = basePrice * (1 - (percentage / 100));
+        _finalPriceController.text = finalPrice.toStringAsFixed(2);
+      } else if (fromFinalPrice) {
+        double finalPrice = double.tryParse(_finalPriceController.text) ?? 0;
+        if (finalPrice > basePrice) finalPrice = basePrice;
+        double percentage = (1 - (finalPrice / basePrice)) * 100;
+        _discountPercentageController.text = percentage.toStringAsFixed(0);
+      }
+    });
   }
 
   Widget _buildCheckboxesSection() {

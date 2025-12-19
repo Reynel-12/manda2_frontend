@@ -305,6 +305,181 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
     }
   }
 
+  void _showDiscountDialog(BusinessProduct product) {
+    final TextEditingController discountController = TextEditingController();
+    final TextEditingController priceController = TextEditingController();
+
+    double originalPrice = product.originalPrice ?? product.price;
+
+    // Si ya tiene descuento, inicializar controladores
+    if (product.originalPrice != null) {
+      priceController.text = product.price.toStringAsFixed(2);
+      double discountPercent =
+          (1 - (product.price / product.originalPrice!)) * 100;
+      discountController.text = discountPercent.toStringAsFixed(0);
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(
+            product.originalPrice != null
+                ? 'Editar Descuento'
+                : 'Aplicar Descuento',
+            style: const TextStyle(
+              color: Color(0xFF05386B),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                product.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Precio original: \$${originalPrice.toStringAsFixed(2)}',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 20),
+
+              // Campo para porcentaje
+              TextField(
+                controller: discountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Porcentaje de descuento (%)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.percent),
+                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    double percent = double.tryParse(value) ?? 0;
+                    if (percent > 100) percent = 100;
+                    double newPrice = originalPrice * (1 - (percent / 100));
+                    priceController.text = newPrice.toStringAsFixed(2);
+                  } else {
+                    priceController.clear();
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+
+              const Center(child: Text('O')),
+              const SizedBox(height: 16),
+
+              // Campo para precio final
+              TextField(
+                controller: priceController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Nuevo precio con descuento (\$)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    double newPrice = double.tryParse(value) ?? 0;
+                    if (newPrice > originalPrice) newPrice = originalPrice;
+                    double percent = (1 - (newPrice / originalPrice)) * 100;
+                    discountController.text = percent.toStringAsFixed(0);
+                  } else {
+                    discountController.clear();
+                  }
+                },
+              ),
+
+              if (product.originalPrice != null) ...[
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      final productIndex = _products.indexWhere(
+                        (p) => p.id == product.id,
+                      );
+                      if (productIndex != -1) {
+                        setState(() {
+                          _products[productIndex] = _products[productIndex]
+                              .copyWith(
+                                price: originalPrice,
+                                originalPrice: null,
+                              );
+                        });
+                      }
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Descuento eliminado')),
+                      );
+                    },
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    label: const Text(
+                      'Eliminar descuento',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                double? newPrice = double.tryParse(priceController.text);
+                if (newPrice != null && newPrice < originalPrice) {
+                  final productIndex = _products.indexWhere(
+                    (p) => p.id == product.id,
+                  );
+                  if (productIndex != -1) {
+                    setState(() {
+                      _products[productIndex] = _products[productIndex]
+                          .copyWith(
+                            price: newPrice,
+                            originalPrice: originalPrice,
+                          );
+                    });
+                  }
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Descuento aplicado a ${product.name}'),
+                      backgroundColor: const Color(0xFF05386B),
+                    ),
+                  );
+                } else if (newPrice != null && newPrice >= originalPrice) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'El precio con descuento debe ser menor al original',
+                      ),
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF6B00),
+              ),
+              child: const Text('Guardar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showImageUploadDialog(String productId) {
     showDialog(
       context: context,
@@ -1166,6 +1341,9 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
                         case 'images':
                           _showImageUploadDialog(product.id);
                           break;
+                        case 'discount':
+                          _showDiscountDialog(product);
+                          break;
                         case 'delete':
                           _deleteProduct(product.id);
                           break;
@@ -1213,16 +1391,20 @@ class _BusinessProductsScreenState extends State<BusinessProductsScreen> {
                         ),
                       ),
                       PopupMenuItem(
-                        value: 'images',
+                        value: 'discount',
                         child: Row(
                           children: [
                             Icon(
-                              Icons.image_outlined,
+                              Icons.local_offer_outlined,
                               color: Colors.grey[700],
                               size: 20,
                             ),
                             const SizedBox(width: 12),
-                            const Text('Gestionar imágenes'),
+                            Text(
+                              product.originalPrice != null
+                                  ? 'Editar descuento'
+                                  : 'Aplicar descuento',
+                            ),
                           ],
                         ),
                       ),

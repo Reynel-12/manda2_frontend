@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/administrator_screen.dart';
 import 'package:manda2_frontend/view/business_dashboard.dart';
 import 'package:manda2_frontend/view/create_account_screen.dart';
 import 'package:manda2_frontend/view/delivery_home.dart';
@@ -169,6 +170,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const BusinessDashboardScreen(),
+                        ),
+                      );
+                    } else if (_emailController.text.trim() == 'Admin') {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AdminDashboardScreen(),
                         ),
                       );
                     } else {

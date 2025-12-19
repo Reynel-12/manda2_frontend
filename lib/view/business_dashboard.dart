@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:manda2_frontend/view/business_finance_screen.dart';
 import 'package:manda2_frontend/view/business_product_screen.dart';
 import 'package:manda2_frontend/view/business_settings.dart';
+import 'package:manda2_frontend/view/create_promotion_screen.dart';
 
 class BusinessDashboardScreen extends StatefulWidget {
   const BusinessDashboardScreen({Key? key}) : super(key: key);
@@ -1734,6 +1735,10 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen> {
             label: 'Productos',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer_outlined),
+            label: 'Promociones',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.attach_money_outlined),
             label: 'Finanzas',
           ),
@@ -1755,10 +1760,17 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const BusinessFinanceScreen(),
+                builder: (context) => const CreatePromotionScreen(),
               ),
             );
           } else if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const BusinessFinanceScreen(),
+              ),
+            );
+          } else if (index == 4) {
             Navigator.push(
               context,
               MaterialPageRoute(

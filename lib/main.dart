@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:manda2_frontend/view/login_screen.dart';
 
-void main() {
+void main() async {
+  // await initializeDateFormatting('es', '');
   runApp(const MyApp());
 }
 
@@ -32,7 +34,10 @@ class MyApp extends StatelessWidget {
           labelStyle: const TextStyle(color: Color(0xFF05386B)),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 18,
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
