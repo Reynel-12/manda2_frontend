@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/client/home.dart';
 import 'package:manda2_frontend/view/delivery/delivery_home.dart';
 import 'package:manda2_frontend/view/general/create_account_screen.dart';
 import 'package:manda2_frontend/view/admin/administrator_screen.dart';
 import 'package:manda2_frontend/view/business/business_dashboard.dart';
-import 'package:manda2_frontend/view/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

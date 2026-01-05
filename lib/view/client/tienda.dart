@@ -27,6 +27,8 @@ class _StoreScreenState extends State<StoreScreen>
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  late ScrollController _scrollController;
+  final ValueNotifier<double> _titleOpacity = ValueNotifier<double>(0.0);
 
   final List<String> categories = [
     'Todos',
@@ -225,11 +227,27 @@ class _StoreScreenState extends State<StoreScreen>
       curve: Curves.easeOut,
     );
     _animationController.forward();
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      double offset = _scrollController.offset;
+      double newOpacity = 0.0;
+      // expandedHeight is 240. Start showing title when offset > 160.
+      if (offset > 160) {
+        newOpacity = (offset - 160) / 40;
+        if (newOpacity > 1.0) newOpacity = 1.0;
+      }
+      if (newOpacity != _titleOpacity.value) {
+        _titleOpacity.value = newOpacity;
+      }
+    });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _scrollController.dispose();
+    _titleOpacity.dispose();
     super.dispose();
   }
 
@@ -276,18 +294,28 @@ class _StoreScreenState extends State<StoreScreen>
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: CustomScrollView(
+          controller: _scrollController,
           slivers: [
             // SliverAppBar moderno
             SliverAppBar(
               expandedHeight: 240,
               pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Text(
-                  '',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                background: _buildStoreBanner(),
+              title: ValueListenableBuilder<double>(
+                valueListenable: _titleOpacity,
+                builder: (context, opacity, child) {
+                  return Opacity(
+                    opacity: opacity,
+                    child: Text(
+                      widget.storeName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                },
               ),
+              flexibleSpace: FlexibleSpaceBar(background: _buildStoreBanner()),
               leading: IconButton(
                 icon: const CircleAvatar(
                   backgroundColor: Colors.white70,

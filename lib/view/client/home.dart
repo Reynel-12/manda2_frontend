@@ -143,14 +143,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     Text(
                       'Entregar en',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: Colors.white),
                     ),
                     const Text(
                       'Barrio Los Pinos, Casa #45',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -164,10 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Stack(
             children: [
               IconButton(
-                icon: Icon(
-                  Icons.shopping_cart_outlined,
-                  color: theme.primaryColor,
-                ),
+                icon: Icon(Icons.shopping_cart_outlined, color: Colors.white),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const CartScreen()),

@@ -104,7 +104,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                   duration: const Duration(milliseconds: 300),
                   child: Text(
                     widget.product.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -546,26 +549,3 @@ void navigateToProductDetail(BuildContext context, Product product) {
     ),
   );
 }
-
-// Ejemplo de producto para testing
-Product exampleProduct = Product(
-  'Leche Entera Fresca 1L',
-  id: 1,
-  name: 'Leche Entera Fresca 1L',
-  description:
-      'Leche 100% natural pasteurizada, sin conservantes añadidos. Ideal para el consumo diario de toda la familia. Producida localmente con los más altos estándares de calidad.',
-  price: 2.50,
-  originalPrice: 2.80,
-  category: 'Lácteos',
-  image: [
-    'https://ilacad.com/BO/data/logos_cadenas/logo_la_colonia_honduras.jpg',
-  ],
-  storeName: 'Pulpería "El Buen Precio"',
-  storeCategory: 'Supermercado',
-  isFavorite: false,
-  rating: 4.5,
-  stock: 15,
-  unit: 'litro',
-  salesCount: 342,
-  deliveryTime: 20,
-);
