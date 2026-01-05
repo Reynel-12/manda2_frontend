@@ -7,8 +7,9 @@ class OrderHistoryScreen extends StatefulWidget {
   State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
 }
 
-class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
-  String _selectedFilter = 'Todos'; // Filtro actual
+class _OrderHistoryScreenState extends State<OrderHistoryScreen>
+    with TickerProviderStateMixin {
+  String _selectedFilter = 'Todos';
   final List<Order> _orders = [];
   final List<String> _filters = [
     'Todos',
@@ -22,11 +23,30 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   double _totalSpent = 0.0;
   int _completedOrders = 0;
 
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
     _loadOrders();
     _calculateStatistics();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   void _loadOrders() {
@@ -140,11 +160,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     setState(() {
       _totalOrders = _orders.length;
       _completedOrders = _orders
-          .where((order) => order.status == OrderStatus.delivered)
+          .where((o) => o.status == OrderStatus.delivered)
           .length;
       _totalSpent = _orders
-          .where((order) => order.status == OrderStatus.delivered)
-          .fold(0.0, (sum, order) => sum + order.total);
+          .where((o) => o.status == OrderStatus.delivered)
+          .fold(0.0, (sum, o) => sum + o.total);
     });
   }
 
@@ -170,664 +190,463 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     }
   }
 
-  void _onFilterChanged(String filter) {
-    setState(() {
-      _selectedFilter = filter;
-    });
-  }
+  // void _onFilterChanged(String filter) {
+  //   setState(() {
+  //     _selectedFilter = filter;
+  //   });
+  // }
 
-  // void _reorderOrder(Order order) {
-  //   // Lógica para reordenar
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text('Reordenando ${order.storeName}...'),
-  //       backgroundColor: const Color(0xFF05386B),
-  //       action: SnackBarAction(
-  //         label: 'Ver Carrito',
-  //         textColor: Colors.white,
-  //         onPressed: () {
-  //           // Navegar al carrito
-  //         },
-  //       ),
-  //     ),
+  // void _viewOrderDetails(Order order) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => OrderDetailScreen(order: order)),
   //   );
   // }
 
-  void _viewOrderDetails(Order order) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => OrderDetailScreen(order: order)),
-    );
-  }
-
-  void _rateOrder(Order order) {
-    showDialog(
-      context: context,
-      builder: (context) => _buildRatingDialog(order),
-    );
-  }
+  // void _rateOrder(Order order) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => _buildRatingDialog(order),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.of(context).size.width >= 600;
+    final isDesktop = MediaQuery.of(context).size.width >= 1200;
+    final crossAxisCount = isDesktop
+        ? 3
+        : isTablet
+        ? 2
+        : 1;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Historial de Pedidos'),
         backgroundColor: const Color(0xFF05386B),
         foregroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search_outlined),
-            onPressed: () {
-              // Buscar en historial
-            },
-          ),
-        ],
+        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
       ),
-      body: Column(
-        children: [
-          // Estadísticas
-          _buildStatisticsCard(),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Column(
+          children: [
+            // Estadísticas
+            _buildStatsSection(isTablet || isDesktop),
 
-          // Filtros
-          _buildFilterSection(),
+            // Filtros
+            _buildFilterChips(),
 
-          // Lista de pedidos
-          Expanded(
-            child: _filteredOrders.isEmpty
-                ? _buildEmptyState()
-                : _buildOrderList(),
-          ),
-        ],
+            // Lista/Grid de pedidos
+            Expanded(
+              child: _filteredOrders.isEmpty
+                  ? _buildEmptyState()
+                  : GridView.builder(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isDesktop ? 48 : 16,
+                        vertical: 24,
+                      ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        crossAxisSpacing: 24,
+                        mainAxisSpacing: 24,
+                        childAspectRatio: isDesktop ? 1.2 : 1.0,
+                      ),
+                      itemCount: _filteredOrders.length,
+                      itemBuilder: (context, index) {
+                        final order = _filteredOrders[index];
+                        return ScaleTransition(
+                          scale: Tween<double>(begin: 0.9, end: 1.0).animate(
+                            CurvedAnimation(
+                              parent: _animationController,
+                              curve: Interval(
+                                index * 0.05,
+                                1.0,
+                                curve: Curves.easeOutBack,
+                              ),
+                            ),
+                          ),
+                          child: _buildOrderCard(order),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // Tarjeta de estadísticas
-  Widget _buildStatisticsCard() {
+  Widget _buildStatsSection(bool isWide) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF05386B),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF05386B), Color(0xFF0A5A9B)],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(24),
       ),
-      child: Column(
-        children: [
-          // Estadísticas principales
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildStatItem(
-                _totalOrders.toString(),
-                'Pedidos',
-                Icons.shopping_bag_outlined,
-              ),
-              _buildStatItem(
-                '\$${_totalSpent.toStringAsFixed(0)}',
-                'Total gastado',
-                Icons.attach_money_outlined,
-              ),
-              _buildStatItem(
-                _completedOrders.toString(),
-                'Completados',
-                Icons.check_circle_outlined,
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Resumen del filtro
-          Text(
-            'Mostrando ${_filteredOrders.length} pedidos$_getFilterText',
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
-          ),
-        ],
-      ),
+      child: isWide
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: _buildStatCards(),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: _buildStatCards(),
+            ),
     );
   }
 
-  Widget _buildStatItem(String value, String label, IconData icon) {
+  List<Widget> _buildStatCards() {
+    return [
+      _buildStatCard(
+        _totalOrders.toString(),
+        'Pedidos Totales',
+        Icons.shopping_bag_outlined,
+      ),
+      _buildStatCard(
+        '\$${_totalSpent.toStringAsFixed(0)}',
+        'Gastado Total',
+        Icons.attach_money,
+      ),
+      _buildStatCard(
+        _completedOrders.toString(),
+        'Entregados',
+        Icons.check_circle_outline,
+      ),
+    ];
+  }
+
+  Widget _buildStatCard(String value, String label, IconData icon) {
     return Column(
       children: [
         Container(
-          width: 50,
-          height: 50,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(25),
+            shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.white, size: 24),
+          child: Icon(icon, size: 32, color: Colors.white),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           value,
           style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(color: Colors.white70, fontSize: 12),
+          style: const TextStyle(fontSize: 14, color: Colors.white70),
         ),
       ],
     );
   }
 
-  String get _getFilterText {
-    if (_selectedFilter == 'Todos') return '';
-    return ' ($_selectedFilter)';
-  }
-
-  // Sección de filtros
-  Widget _buildFilterSection() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Filtrar por',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF05386B),
+  Widget _buildFilterChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: _filters.map((f) {
+          final selected = f == _selectedFilter;
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: FilterChip(
+              label: Text(f),
+              selected: selected,
+              onSelected: (_) => setState(() => _selectedFilter = f),
+              selectedColor: const Color(0xFFFF6B00),
+              backgroundColor: Colors.grey[100],
+              labelStyle: TextStyle(
+                color: selected ? Colors.white : const Color(0xFF05386B),
+                fontWeight: FontWeight.w600,
+              ),
+              avatar: selected
+                  ? const Icon(Icons.check, color: Colors.white, size: 18)
+                  : null,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _filters.map((filter) {
-                final isSelected = filter == _selectedFilter;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(filter),
-                    selected: isSelected,
-                    onSelected: (_) => _onFilterChanged(filter),
-                    backgroundColor: Colors.white,
-                    selectedColor: const Color(0xFFFF6B00).withOpacity(0.2),
-                    checkmarkColor: const Color(0xFFFF6B00),
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? const Color(0xFFFF6B00)
-                          : const Color(0xFF05386B),
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                    ),
-                    side: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFFFF6B00)
-                          : Colors.grey[300]!,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
+          );
+        }).toList(),
       ),
     );
   }
 
-  // Estado vacío
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 120,
-              height: 120,
+              padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
                 color: const Color(0xFF05386B).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.history_outlined,
-                size: 60,
+                Icons.history,
+                size: 80,
                 color: Color(0xFF05386B),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'No hay pedidos',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF05386B),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              _selectedFilter == 'Todos'
-                  ? 'Realiza tu primer pedido para comenzar'
-                  : 'No hay pedidos en este período',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-                // textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 32),
-            if (_selectedFilter != 'Todos')
-              ElevatedButton(
-                onPressed: () => _onFilterChanged('Todos'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF6B00),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Ver todos los pedidos',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Text(
+              'Sin pedidos aún',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: const Color(0xFF05386B),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Tus pedidos aparecerán aquí una vez que los realices',
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.store),
+              label: const Text('Explorar Tiendas'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF6B00),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
                 ),
               ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // Lista de pedidos
-  Widget _buildOrderList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _filteredOrders.length,
-      itemBuilder: (context, index) {
-        final order = _filteredOrders[index];
-        return _buildOrderCard(order);
-      },
-    );
-  }
-
-  // Tarjeta de pedido
   Widget _buildOrderCard(Order order) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Header del pedido
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Primera fila: ID y fecha
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      order.id,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF05386B),
-                      ),
+    return Card(
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => OrderDetailScreen(order: order)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    order.id,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF05386B),
                     ),
-                    Text(
-                      _formatDate(order.date),
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                // Segunda fila: Tienda y estado
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        order.storeName,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF05386B),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(order.status).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(order.status).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        _getStatusText(order.status),
-                        style: TextStyle(
-                          color: _getStatusColor(order.status),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                // Items del pedido
-                Column(
-                  children: order.items.take(2).map((item) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 4,
-                            height: 4,
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF05386B),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              '${item.name} x${item.quantity}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[700],
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            '\$${(item.price * item.quantity).toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF05386B),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-                if (order.items.length > 2) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      '+${order.items.length - 2} más',
+                      _getStatusText(order.status),
                       style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                        fontStyle: FontStyle.italic,
+                        color: _getStatusColor(order.status),
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ],
-
-                const SizedBox(height: 12),
-
-                // Total y rating
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Total',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          '\$${order.total.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF05386B),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // if (order.status == OrderStatus.delivered &&
-                    //     order.rating != null)
-                    //   Row(
-                    //     children: [
-                    //       const Icon(Icons.star, color: Colors.amber, size: 16),
-                    //       const SizedBox(width: 4),
-                    //       Text(
-                    //         order.rating!.toString(),
-                    //         style: const TextStyle(
-                    //           fontWeight: FontWeight.w600,
-                    //           color: Color(0xFF05386B),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Acciones del pedido
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
               ),
-            ),
-            child: Row(
-              children: [
-                // Botón de detalles
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _viewOrderDetails(order),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF05386B)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 12),
+              Text(
+                order.storeName,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                _formatDate(order.date),
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 16),
+              ...order.items
+                  .take(3)
+                  .map(
+                    (i) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Text('• ${i.name} ×${i.quantity}'),
+                          const Spacer(),
+                          Text(
+                            '\$${(i.price * i.quantity).toStringAsFixed(2)}',
+                          ),
+                        ],
                       ),
                     ),
-                    child: const Text(
-                      'Ver Detalles',
-                      style: TextStyle(color: Color(0xFF05386B)),
-                    ),
+                  )
+                  .toList(),
+              if (order.items.length > 3)
+                Text(
+                  '+${order.items.length - 3} más',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
-
-                const SizedBox(width: 12),
-
-                // Botón de reordenar (solo para entregados)
-                // if (order.status == OrderStatus.delivered)
-                //   Expanded(
-                //     child: ElevatedButton(
-                //       onPressed: () => _reorderOrder(order),
-                //       style: ElevatedButton.styleFrom(
-                //         backgroundColor: const Color(0xFFFF6B00),
-                //         shape: RoundedRectangleBorder(
-                //           borderRadius: BorderRadius.circular(8),
-                //         ),
-                //       ),
-                //       child: const Text(
-                //         'Reordenar',
-                //         style: TextStyle(color: Colors.white),
-                //       ),
-                //     ),
-                //   ),
-
-                // Botón de calificar (solo para entregados sin rating)
-                if (order.status == OrderStatus.delivered &&
-                    order.rating == null)
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => _rateOrder(order),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Total', style: TextStyle(color: Colors.grey)),
+                      Text(
+                        '\$${order.total.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF05386B),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (order.status == OrderStatus.delivered &&
+                      order.rating == null)
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('Calificar'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF05386B),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Calificar',
-                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  // Diálogo de calificación
-  Widget _buildRatingDialog(Order order) {
-    int rating = 0;
+  // String get _getFilterText {
+  //   if (_selectedFilter == 'Todos') return '';
+  //   return ' ($_selectedFilter)';
+  // }
 
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return AlertDialog(
-          title: const Text(
-            'Calificar Pedido',
-            style: TextStyle(
-              color: Color(0xFF05386B),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '¿Cómo calificarías tu experiencia con ${order.storeName}?',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return IconButton(
-                    icon: Icon(
-                      index < rating ? Icons.star : Icons.star_border_outlined,
-                      color: Colors.amber,
-                      size: 36,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        rating = index + 1;
-                      });
-                    },
-                  );
-                }),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                rating == 0 ? '' : '$rating estrellas',
-                style: const TextStyle(
-                  color: Color(0xFF05386B),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(color: Color(0xFF05386B)),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: rating > 0
-                  ? () {
-                      // Actualizar rating
-                      final updatedOrder = order.copyWith(rating: rating);
-                      final index = _orders.indexOf(order);
-                      setState(() {
-                        _orders[index] = updatedOrder;
-                      });
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('¡Gracias por tu calificación!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF6B00),
-              ),
-              child: const Text('Enviar Calificación'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Diálogo de calificación
+  // Widget _buildRatingDialog(Order order) {
+  //   int rating = 0;
+
+  //   return StatefulBuilder(
+  //     builder: (context, setState) {
+  //       return AlertDialog(
+  //         title: const Text(
+  //           'Calificar Pedido',
+  //           style: TextStyle(
+  //             color: Color(0xFF05386B),
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Text(
+  //               '¿Cómo calificarías tu experiencia con ${order.storeName}?',
+  //               textAlign: TextAlign.center,
+  //             ),
+  //             const SizedBox(height: 20),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: List.generate(5, (index) {
+  //                 return IconButton(
+  //                   icon: Icon(
+  //                     index < rating ? Icons.star : Icons.star_border_outlined,
+  //                     color: Colors.amber,
+  //                     size: 36,
+  //                   ),
+  //                   onPressed: () {
+  //                     setState(() {
+  //                       rating = index + 1;
+  //                     });
+  //                   },
+  //                 );
+  //               }),
+  //             ),
+  //             const SizedBox(height: 10),
+  //             Text(
+  //               rating == 0 ? '' : '$rating estrellas',
+  //               style: const TextStyle(
+  //                 color: Color(0xFF05386B),
+  //                 fontWeight: FontWeight.w600,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.pop(context),
+  //             child: const Text(
+  //               'Cancelar',
+  //               style: TextStyle(color: Color(0xFF05386B)),
+  //             ),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: rating > 0
+  //                 ? () {
+  //                     // Actualizar rating
+  //                     final updatedOrder = order.copyWith(rating: rating);
+  //                     final index = _orders.indexOf(order);
+  //                     setState(() {
+  //                       _orders[index] = updatedOrder;
+  //                     });
+  //                     Navigator.pop(context);
+  //                     ScaffoldMessenger.of(context).showSnackBar(
+  //                       const SnackBar(
+  //                         content: Text('¡Gracias por tu calificación!'),
+  //                         backgroundColor: Colors.green,
+  //                       ),
+  //                     );
+  //                   }
+  //                 : null,
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: const Color(0xFFFF6B00),
+  //             ),
+  //             child: const Text('Enviar Calificación'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   // Métodos de ayuda
   String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      return 'Hoy';
-    } else if (difference.inDays == 1) {
-      return 'Ayer';
-    } else if (difference.inDays < 7) {
-      return 'Hace ${difference.inDays} días';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) return 'Hoy';
+    if (diff.inDays == 1) return 'Ayer';
+    return '${date.day}/${date.month}/${date.year}';
   }
 
   String _getStatusText(OrderStatus status) {
@@ -1302,74 +1121,6 @@ class OrderDetailScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _buildBottomActions(BuildContext context) {
-  //   return Container(
-  //     padding: const EdgeInsets.all(16),
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.grey.withOpacity(0.2),
-  //           blurRadius: 10,
-  //           spreadRadius: 2,
-  //         ),
-  //       ],
-  //     ),
-  //     child: Row(
-  //       children: [
-  //         // Reordenar
-  //         // Expanded(
-  //         //   child: ElevatedButton(
-  //         //     onPressed: () {
-  //         //       // Reordenar
-  //         //       Navigator.pop(context);
-  //         //       ScaffoldMessenger.of(context).showSnackBar(
-  //         //         SnackBar(
-  //         //           content: Text('Reordenando ${order.storeName}...'),
-  //         //           backgroundColor: const Color(0xFF05386B),
-  //         //         ),
-  //         //       );
-  //         //     },
-  //         //     style: ElevatedButton.styleFrom(
-  //         //       backgroundColor: const Color(0xFFFF6B00),
-  //         //       foregroundColor: Colors.white,
-  //         //       padding: const EdgeInsets.symmetric(vertical: 16),
-  //         //       shape: RoundedRectangleBorder(
-  //         //         borderRadius: BorderRadius.circular(12),
-  //         //       ),
-  //         //     ),
-  //         //     child: const Text(
-  //         //       'Reordenar',
-  //         //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-  //         //     ),
-  //         //   ),
-  //         // ),
-
-  //         // const SizedBox(width: 12),
-
-  //         // Ayuda
-  //         Container(
-  //           width: 56,
-  //           height: 56,
-  //           decoration: BoxDecoration(
-  //             border: Border.all(color: const Color(0xFF05386B)),
-  //             borderRadius: BorderRadius.circular(12),
-  //           ),
-  //           child: IconButton(
-  //             icon: const Icon(
-  //               Icons.help_outline_outlined,
-  //               color: Color(0xFF05386B),
-  //             ),
-  //             onPressed: () {
-  //               // Ayuda
-  //             },
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   // Métodos de ayuda
   String _formatDetailedDate(DateTime date) {

@@ -6,6 +6,7 @@ import 'package:manda2_frontend/view/client/favorite_screen.dart'
 import 'package:manda2_frontend/view/client/order_history_screen.dart';
 import 'package:manda2_frontend/view/client/order_tracking_screen.dart';
 import 'package:manda2_frontend/view/client/tienda.dart';
+import 'package:manda2_frontend/view/general/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  int _cartItemCount = 3;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   late AnimationController _animationController;
@@ -124,22 +124,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: const Color(0xFF05386B),
+        foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          color: theme.primaryColor,
         ),
         title: GestureDetector(
           onTap: () => _showAddressDialog(),
           child: Row(
             children: [
-              Icon(
-                Icons.location_on_outlined,
-                color: theme.primaryColor,
-                size: 20,
-              ),
+              Icon(Icons.location_on_outlined, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -168,32 +164,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined),
+                icon: Icon(
+                  Icons.shopping_cart_outlined,
+                  color: theme.primaryColor,
+                ),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const CartScreen()),
                 ),
               ),
-              if (_cartItemCount > 0)
-                Positioned(
-                  right: 6,
-                  top: 6,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFF6B00),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      _cartItemCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
           const SizedBox(width: 8),
@@ -343,12 +322,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
                 const Divider(),
-                _buildDrawerItem(
-                  Icons.logout_outlined,
-                  'Cerrar Sesión',
-                  () {},
-                  color: Colors.red,
-                ),
+                _buildDrawerItem(Icons.logout_outlined, 'Cerrar Sesión', () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  );
+                }, color: Colors.red),
               ],
             ),
           ),

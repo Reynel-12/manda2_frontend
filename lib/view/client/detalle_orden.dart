@@ -18,6 +18,7 @@ class DeliveryOrderDetailScreen extends StatefulWidget {
 class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
   DeliveryOrder? _order;
   bool _isLoading = false;
+  // ignore: unused_field
   String _currentAction = '';
   // final PageController _pageController = PageController();
   // int _currentPage = 0;
@@ -383,36 +384,36 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
   //   );
   // }
 
-  Widget _buildTimelineStep(_TimelineStep step, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: isActive ? const Color(0xFFFF6B00) : Colors.grey[300],
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 2),
-          ),
-          child: Icon(_getStepIcon(step.status), color: Colors.white, size: 20),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          step.title,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-            color: isActive ? const Color(0xFF05386B) : Colors.grey[600],
-          ),
-        ),
-        Text(
-          _formatTime(step.time),
-          style: TextStyle(fontSize: 10, color: Colors.grey[500]),
-        ),
-      ],
-    );
-  }
+  // Widget _buildTimelineStep(_TimelineStep step, bool isActive) {
+  //   return Column(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       Container(
+  //         width: 40,
+  //         height: 40,
+  //         decoration: BoxDecoration(
+  //           color: isActive ? const Color(0xFFFF6B00) : Colors.grey[300],
+  //           shape: BoxShape.circle,
+  //           border: Border.all(color: Colors.white, width: 2),
+  //         ),
+  //         child: Icon(_getStepIcon(step.status), color: Colors.white, size: 20),
+  //       ),
+  //       const SizedBox(height: 4),
+  //       Text(
+  //         step.title,
+  //         style: TextStyle(
+  //           fontSize: 12,
+  //           fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+  //           color: isActive ? const Color(0xFF05386B) : Colors.grey[600],
+  //         ),
+  //       ),
+  //       Text(
+  //         _formatTime(step.time),
+  //         style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // bool _isStepActive(OrderStatus status) {
   //   final order = _order!;
@@ -430,20 +431,20 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
   //   }
   // }
 
-  IconData _getStepIcon(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.assigned:
-        return Icons.assignment_outlined;
-      case OrderStatus.accepted:
-        return Icons.check_circle_outlined;
-      case OrderStatus.pickedUp:
-        return Icons.shopping_bag_outlined;
-      case OrderStatus.delivered:
-        return Icons.delivery_dining_outlined;
-      default:
-        return Icons.help_outline_outlined;
-    }
-  }
+  // IconData _getStepIcon(OrderStatus status) {
+  //   switch (status) {
+  //     case OrderStatus.assigned:
+  //       return Icons.assignment_outlined;
+  //     case OrderStatus.accepted:
+  //       return Icons.check_circle_outlined;
+  //     case OrderStatus.pickedUp:
+  //       return Icons.shopping_bag_outlined;
+  //     case OrderStatus.delivered:
+  //       return Icons.delivery_dining_outlined;
+  //     default:
+  //       return Icons.help_outline_outlined;
+  //   }
+  // }
 
   // Información del pedido
   Widget _buildOrderInfoCard() {
@@ -1280,99 +1281,99 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
   }
 
   // Barra inferior con información
-  Widget _buildBottomInfoBar() {
-    final order = _order!;
-    // final isCompleted = order.status == OrderStatus.delivered;
+  // Widget _buildBottomInfoBar() {
+  //   final order = _order!;
+  //   // final isCompleted = order.status == OrderStatus.delivered;
 
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildBottomInfoItem(
-            Icons.access_time_outlined,
-            '${order.estimatedDeliveryTime} min',
-            'Tiempo estimado',
-          ),
-          _buildBottomInfoItem(
-            Icons.directions_outlined,
-            '${order.distance} km',
-            'Distancia',
-          ),
-          _buildBottomInfoItem(
-            Icons.attach_money_outlined,
-            '\$${order.deliveryFee.toStringAsFixed(2)}',
-            'Tu ganancia',
-          ),
-        ],
-      ),
-    );
-  }
+  //   return Container(
+  //     height: 60,
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1)),
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         _buildBottomInfoItem(
+  //           Icons.access_time_outlined,
+  //           '${order.estimatedDeliveryTime} min',
+  //           'Tiempo estimado',
+  //         ),
+  //         _buildBottomInfoItem(
+  //           Icons.directions_outlined,
+  //           '${order.distance} km',
+  //           'Distancia',
+  //         ),
+  //         _buildBottomInfoItem(
+  //           Icons.attach_money_outlined,
+  //           '\$${order.deliveryFee.toStringAsFixed(2)}',
+  //           'Tu ganancia',
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildBottomNavigationBar() {
-    final order = _order!;
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: 0,
-        type: BottomNavigationBarType.shifting,
-        selectedItemColor: const Color(0xFFFF6B00),
-        unselectedItemColor: Colors.grey[600],
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.access_time_outlined),
-            activeIcon: Icon(Icons.access_time),
-            label: '${order.estimatedDeliveryTime} min\nTiempo estimado',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_outlined),
-            activeIcon: Icon(Icons.directions),
-            label: '${order.distance} km\nDistancia',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.attach_money_outlined),
-            activeIcon: Icon(Icons.attach_money),
-            label: '\$${order.deliveryFee.toStringAsFixed(2)}\nTu ganancia',
-          ),
-        ],
-        // onTap: (index) {},
-      ),
-    );
-  }
+  // Widget _buildBottomNavigationBar() {
+  //   final order = _order!;
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.2),
+  //           blurRadius: 10,
+  //           spreadRadius: 2,
+  //         ),
+  //       ],
+  //     ),
+  //     child: BottomNavigationBar(
+  //       currentIndex: 0,
+  //       type: BottomNavigationBarType.shifting,
+  //       selectedItemColor: const Color(0xFFFF6B00),
+  //       unselectedItemColor: Colors.grey[600],
+  //       showSelectedLabels: true,
+  //       showUnselectedLabels: true,
+  //       items: [
+  //         BottomNavigationBarItem(
+  //           icon: Icon(Icons.access_time_outlined),
+  //           activeIcon: Icon(Icons.access_time),
+  //           label: '${order.estimatedDeliveryTime} min\nTiempo estimado',
+  //         ),
+  //         BottomNavigationBarItem(
+  //           icon: Icon(Icons.directions_outlined),
+  //           activeIcon: Icon(Icons.directions),
+  //           label: '${order.distance} km\nDistancia',
+  //         ),
+  //         BottomNavigationBarItem(
+  //           icon: Icon(Icons.attach_money_outlined),
+  //           activeIcon: Icon(Icons.attach_money),
+  //           label: '\$${order.deliveryFee.toStringAsFixed(2)}\nTu ganancia',
+  //         ),
+  //       ],
+  //       // onTap: (index) {},
+  //     ),
+  //   );
+  // }
 
-  Widget _buildBottomInfoItem(IconData icon, String value, String label) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: const Color(0xFF05386B), size: 20),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF05386B),
-          ),
-        ),
-        Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
-      ],
-    );
-  }
+  // Widget _buildBottomInfoItem(IconData icon, String value, String label) {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Icon(icon, color: const Color(0xFF05386B), size: 20),
+  //       const SizedBox(height: 4),
+  //       Text(
+  //         value,
+  //         style: const TextStyle(
+  //           fontSize: 14,
+  //           fontWeight: FontWeight.w600,
+  //           color: Color(0xFF05386B),
+  //         ),
+  //       ),
+  //       Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+  //     ],
+  //   );
+  // }
 
   // Resumen de entrega
   Widget _buildDeliverySummary() {
@@ -1594,9 +1595,9 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} - ${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
 
-  String _formatTime(DateTime dateTime) {
-    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-  }
+  // String _formatTime(DateTime dateTime) {
+  //   return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  // }
 
   String _getStatusText(OrderStatus status) {
     switch (status) {
@@ -1634,13 +1635,13 @@ class _DeliveryOrderDetailScreenState extends State<DeliveryOrderDetailScreen> {
 }
 
 // Clases de apoyo
-class _TimelineStep {
-  final String title;
-  final DateTime time;
-  final OrderStatus status;
+// class _TimelineStep {
+//   final String title;
+//   final DateTime time;
+//   final OrderStatus status;
 
-  _TimelineStep(this.title, this.time, this.status);
-}
+//   _TimelineStep(this.title, this.time, this.status);
+// }
 
 // Modelos de datos (de la pantalla anterior)
 enum OrderStatus {

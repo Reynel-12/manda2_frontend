@@ -859,6 +859,28 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                if (store.isOfficial)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFF6B00),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Text(
+                                        'OFICIAL',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 Row(
                                   children: [
                                     Text(
@@ -871,30 +893,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    if (store.isOfficial)
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFFF6B00),
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'OFICIAL',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
@@ -1139,209 +1137,209 @@ class StoreScreen extends StatelessWidget {
 }
 
 // Widget de Grid para vista de tablet
-class _FavoriteProductsGrid extends StatelessWidget {
-  final List<Product> products;
-  final Function(Product) onRemove;
-  final Function(Product) onProductTap;
+// class _FavoriteProductsGrid extends StatelessWidget {
+//   final List<Product> products;
+//   final Function(Product) onRemove;
+//   final Function(Product) onProductTap;
 
-  const _FavoriteProductsGrid({
-    required this.products,
-    required this.onRemove,
-    required this.onProductTap,
-  });
+//   const _FavoriteProductsGrid({
+//     required this.products,
+//     required this.onRemove,
+//     required this.onProductTap,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    final isTablet = MediaQuery.of(context).size.width >= 600;
-    final crossAxisCount = isTablet ? 2 : 1;
+//   @override
+//   Widget build(BuildContext context) {
+//     final isTablet = MediaQuery.of(context).size.width >= 600;
+//     final crossAxisCount = isTablet ? 2 : 1;
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: isTablet ? 1.5 : 1.8,
-      ),
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        final product = products[index];
-        return _buildGridProductItem(product, context);
-      },
-    );
-  }
+//     return GridView.builder(
+//       padding: const EdgeInsets.all(16),
+//       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//         crossAxisCount: crossAxisCount,
+//         crossAxisSpacing: 16,
+//         mainAxisSpacing: 16,
+//         childAspectRatio: isTablet ? 1.5 : 1.8,
+//       ),
+//       itemCount: products.length,
+//       itemBuilder: (context, index) {
+//         final product = products[index];
+//         return _buildGridProductItem(product, context);
+//       },
+//     );
+//   }
 
-  Widget _buildGridProductItem(Product product, BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => onProductTap(product),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header con nombre y botón de favorito
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        product.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF05386B),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.favorite,
-                        color: Color(0xFFFF6B00),
-                        size: 20,
-                      ),
-                      onPressed: () => onRemove(product),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
+//   Widget _buildGridProductItem(Product product, BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(16),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.grey.withOpacity(0.1),
+//             blurRadius: 10,
+//             spreadRadius: 2,
+//           ),
+//         ],
+//       ),
+//       child: Material(
+//         color: Colors.transparent,
+//         child: InkWell(
+//           onTap: () => onProductTap(product),
+//           borderRadius: BorderRadius.circular(16),
+//           child: Padding(
+//             padding: const EdgeInsets.all(16),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 // Header con nombre y botón de favorito
+//                 Row(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Expanded(
+//                       child: Text(
+//                         product.name,
+//                         style: const TextStyle(
+//                           fontSize: 16,
+//                           fontWeight: FontWeight.bold,
+//                           color: Color(0xFF05386B),
+//                         ),
+//                         maxLines: 2,
+//                         overflow: TextOverflow.ellipsis,
+//                       ),
+//                     ),
+//                     IconButton(
+//                       icon: const Icon(
+//                         Icons.favorite,
+//                         color: Color(0xFFFF6B00),
+//                         size: 20,
+//                       ),
+//                       onPressed: () => onRemove(product),
+//                       padding: EdgeInsets.zero,
+//                       constraints: const BoxConstraints(),
+//                     ),
+//                   ],
+//                 ),
 
-                // Tienda y categoría
-                Text(
-                  product.storeName,
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+//                 // Tienda y categoría
+//                 Text(
+//                   product.storeName,
+//                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+//                   maxLines: 1,
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
 
-                const SizedBox(height: 8),
+//                 const SizedBox(height: 8),
 
-                // Rating y categoría
-                Row(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          product.rating.toString(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF05386B).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        product.category,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF05386B),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+//                 // Rating y categoría
+//                 Row(
+//                   children: [
+//                     Row(
+//                       children: [
+//                         const Icon(Icons.star, color: Colors.amber, size: 16),
+//                         const SizedBox(width: 4),
+//                         Text(
+//                           product.rating.toString(),
+//                           style: TextStyle(
+//                             fontSize: 14,
+//                             color: Colors.grey[700],
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                     const SizedBox(width: 12),
+//                     Container(
+//                       padding: const EdgeInsets.symmetric(
+//                         horizontal: 8,
+//                         vertical: 2,
+//                       ),
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFF05386B).withOpacity(0.1),
+//                         borderRadius: BorderRadius.circular(6),
+//                       ),
+//                       child: Text(
+//                         product.category,
+//                         style: const TextStyle(
+//                           fontSize: 12,
+//                           color: Color(0xFF05386B),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
 
-                const Spacer(),
+//                 const Spacer(),
 
-                // Precio y stock
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              '\$${product.price.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF05386B),
-                              ),
-                            ),
-                            if (product.originalPrice != null)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Text(
-                                  '\$${product.originalPrice!.toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[500],
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        Text(
-                          'Por ${product.unit}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
+//                 // Precio y stock
+//                 Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   children: [
+//                     Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Row(
+//                           children: [
+//                             Text(
+//                               '\$${product.price.toStringAsFixed(2)}',
+//                               style: const TextStyle(
+//                                 fontSize: 18,
+//                                 fontWeight: FontWeight.bold,
+//                                 color: Color(0xFF05386B),
+//                               ),
+//                             ),
+//                             if (product.originalPrice != null)
+//                               Padding(
+//                                 padding: const EdgeInsets.only(left: 8),
+//                                 child: Text(
+//                                   '\$${product.originalPrice!.toStringAsFixed(2)}',
+//                                   style: TextStyle(
+//                                     fontSize: 14,
+//                                     color: Colors.grey[500],
+//                                     decoration: TextDecoration.lineThrough,
+//                                   ),
+//                                 ),
+//                               ),
+//                           ],
+//                         ),
+//                         Text(
+//                           'Por ${product.unit}',
+//                           style: TextStyle(
+//                             fontSize: 12,
+//                             color: Colors.grey[600],
+//                           ),
+//                         ),
+//                       ],
+//                     ),
 
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: product.isInStock
-                            ? Colors.green[50]
-                            : Colors.red[50],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        product.isInStock ? 'Disponible' : 'Agotado',
-                        style: TextStyle(
-                          color: product.isInStock
-                              ? Colors.green[700]
-                              : Colors.red[700],
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//                     Container(
+//                       padding: const EdgeInsets.symmetric(
+//                         horizontal: 12,
+//                         vertical: 6,
+//                       ),
+//                       decoration: BoxDecoration(
+//                         color: product.isInStock
+//                             ? Colors.green[50]
+//                             : Colors.red[50],
+//                         borderRadius: BorderRadius.circular(20),
+//                       ),
+//                       child: Text(
+//                         product.isInStock ? 'Disponible' : 'Agotado',
+//                         style: TextStyle(
+//                           color: product.isInStock
+//                               ? Colors.green[700]
+//                               : Colors.red[700],
+//                           fontSize: 12,
+//                           fontWeight: FontWeight.w600,
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

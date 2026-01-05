@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:manda2_frontend/view/business_add_product.dart';
+import 'package:manda2_frontend/view/business/business_add_product.dart';
 
 class BusinessProductsScreen extends StatefulWidget {
   const BusinessProductsScreen({Key? key}) : super(key: key);

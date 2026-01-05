@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:manda2_frontend/view/business_finance_screen.dart';
-import 'package:manda2_frontend/view/business_product_screen.dart';
-import 'package:manda2_frontend/view/business_settings.dart';
-import 'package:manda2_frontend/view/create_promotion_screen.dart';
+import 'package:manda2_frontend/view/business/business_finance_screen.dart';
+import 'package:manda2_frontend/view/business/business_product_screen.dart';
+import 'package:manda2_frontend/view/business/business_settings.dart';
+import 'package:manda2_frontend/view/business/create_promotion_screen.dart';
 
 class BusinessDashboardScreen extends StatefulWidget {
   const BusinessDashboardScreen({Key? key}) : super(key: key);

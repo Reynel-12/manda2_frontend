@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manda2_frontend/view/configuracion_screen.dart';
-import 'package:manda2_frontend/view/detalle_orden.dart' as detalle_orden;
+import 'package:manda2_frontend/view/client/detalle_orden.dart'
+    as detalle_orden;
+import 'package:manda2_frontend/view/general/configuracion_screen.dart';
 
 class DeliveryHomeScreen extends StatefulWidget {
   const DeliveryHomeScreen({super.key});
