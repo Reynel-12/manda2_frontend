@@ -9,7 +9,8 @@ class BusinessSettingsScreen extends StatefulWidget {
   State<BusinessSettingsScreen> createState() => _BusinessSettingsScreenState();
 }
 
-class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
+class _BusinessSettingsScreenState extends State<BusinessSettingsScreen>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   // Datos del negocio
@@ -78,238 +79,145 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
   );
 
   // Controladores para los campos editables
-  late TextEditingController _nameController;
-  late TextEditingController _descriptionController;
-  late TextEditingController _addressController;
-  late TextEditingController _cityController;
-  late TextEditingController _phoneController;
-  late TextEditingController _emailController;
-  late TextEditingController _websiteController;
-  late TextEditingController _deliveryRadiusController;
-  late TextEditingController _preparationTimeController;
+  late TextEditingController _nameCtrl,
+      _descCtrl,
+      _addrCtrl,
+      _cityCtrl,
+      _phoneCtrl,
+      _emailCtrl,
+      _webCtrl,
+      _radiusCtrl,
+      _prepCtrl;
 
   bool _isEditing = false;
   bool _isLoading = false;
 
+  late AnimationController _animCtrl;
+  late Animation<double> _fadeAnim;
+
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
-  }
+    _initControllers();
 
-  void _initializeControllers() {
-    _nameController = TextEditingController(text: _businessProfile.name);
-    _descriptionController = TextEditingController(
-      text: _businessProfile.description,
+    _animCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
     );
-    _addressController = TextEditingController(text: _businessProfile.address);
-    _cityController = TextEditingController(text: _businessProfile.city);
-    _phoneController = TextEditingController(text: _businessProfile.phone);
-    _emailController = TextEditingController(text: _businessProfile.email);
-    _websiteController = TextEditingController(text: _businessProfile.website);
-    _deliveryRadiusController = TextEditingController(
-      text: _businessProfile.deliveryRadius.toString(),
-    );
-    _preparationTimeController = TextEditingController(
-      text: _businessProfile.preparationTime.toString(),
-    );
+    _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
+    _animCtrl.forward();
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _addressController.dispose();
-    _cityController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    _websiteController.dispose();
-    _deliveryRadiusController.dispose();
-    _preparationTimeController.dispose();
+    _animCtrl.dispose();
+    _nameCtrl.dispose();
+    _descCtrl.dispose();
+    _addrCtrl.dispose();
+    _cityCtrl.dispose();
+    _phoneCtrl.dispose();
+    _emailCtrl.dispose();
+    _webCtrl.dispose();
+    _radiusCtrl.dispose();
+    _prepCtrl.dispose();
     super.dispose();
   }
 
-  void _toggleEditMode() {
+  void _initControllers() {
+    _nameCtrl = TextEditingController(text: _businessProfile.name);
+    _descCtrl = TextEditingController(text: _businessProfile.description);
+    _addrCtrl = TextEditingController(text: _businessProfile.address);
+    _cityCtrl = TextEditingController(text: _businessProfile.city);
+    _phoneCtrl = TextEditingController(text: _businessProfile.phone);
+    _emailCtrl = TextEditingController(text: _businessProfile.email);
+    _webCtrl = TextEditingController(text: _businessProfile.website);
+    _radiusCtrl = TextEditingController(
+      text: _businessProfile.deliveryRadius.toString(),
+    );
+    _prepCtrl = TextEditingController(
+      text: _businessProfile.preparationTime.toString(),
+    );
+  }
+
+  void _toggleEdit() {
     setState(() {
       _isEditing = !_isEditing;
-      if (!_isEditing) {
-        // Si salimos del modo edición, restauramos los valores originales
-        _initializeControllers();
-      }
+      if (!_isEditing) _initControllers();
     });
   }
 
-  void _saveChanges() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-
-      // Simular una petición a la API
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Actualizar el perfil con los nuevos datos
-      setState(() {
-        _businessProfile = _businessProfile.copyWith(
-          name: _nameController.text,
-          description: _descriptionController.text,
-          address: _addressController.text,
-          city: _cityController.text,
-          phone: _phoneController.text,
-          email: _emailController.text,
-          website: _websiteController.text,
-          deliveryRadius:
-              double.tryParse(_deliveryRadiusController.text) ?? 5.0,
-          preparationTime: int.tryParse(_preparationTimeController.text) ?? 25,
-        );
-        _isEditing = false;
-        _isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Cambios guardados exitosamente'),
-          backgroundColor: const Color(0xFF05386B),
-          action: SnackBarAction(label: 'OK', onPressed: () {}),
-        ),
-      );
-    }
-  }
-
-  void _addBannerImage() {
-    // En una aplicación real, aquí se implementaría la selección de imágenes
-    setState(() {
-      _businessProfile.bannerUrls.add(
-        'https://via.placeholder.com/400x200/00A86B/FFFFFF?text=BANNER+NUEVO',
-      );
-    });
-  }
-
-  void _removeBannerImage(int index) {
-    setState(() {
-      _businessProfile.bannerUrls.removeAt(index);
-    });
-  }
-
-  void _updateLogo() {
-    // En una aplicación real, aquí se implementaría la selección de logo
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(seconds: 1));
     setState(() {
       _businessProfile = _businessProfile.copyWith(
-        logoUrl:
-            'https://via.placeholder.com/150/FF6B00/FFFFFF?text=NUEVO+LOGO',
+        name: _nameCtrl.text,
+        description: _descCtrl.text,
+        address: _addrCtrl.text,
+        city: _cityCtrl.text,
+        phone: _phoneCtrl.text,
+        email: _emailCtrl.text,
+        website: _webCtrl.text,
+        deliveryRadius: double.tryParse(_radiusCtrl.text) ?? 5.0,
+        preparationTime: int.tryParse(_prepCtrl.text) ?? 25,
       );
+      _isEditing = false;
+      _isLoading = false;
     });
-  }
-
-  void _updateSchedule(int index) async {
-    final day = _businessProfile.schedule[index];
-
-    final newOpenTime = await showTimePicker(
-      context: context,
-      initialTime: day.openTime,
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Cambios guardados'),
+        backgroundColor: Color(0xFF05386B),
+      ),
     );
-
-    if (newOpenTime != null) {
-      final newCloseTime = await showTimePicker(
-        context: context,
-        initialTime: day.closeTime,
-      );
-
-      if (newCloseTime != null) {
-        setState(() {
-          final newSchedule = List<BusinessDay>.from(_businessProfile.schedule);
-          newSchedule[index] = day.copyWith(
-            openTime: newOpenTime,
-            closeTime: newCloseTime,
-          );
-          _businessProfile = _businessProfile.copyWith(schedule: newSchedule);
-        });
-      }
-    }
-  }
-
-  void _toggleDayStatus(int index) {
-    setState(() {
-      final newSchedule = List<BusinessDay>.from(_businessProfile.schedule);
-      newSchedule[index] = newSchedule[index].copyWith(
-        isOpen: !newSchedule[index].isOpen,
-      );
-      _businessProfile = _businessProfile.copyWith(schedule: newSchedule);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isLargeScreen = screenWidth > 768;
+    final isWide = MediaQuery.of(context).size.width > 768;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configuración del Negocio'),
-        centerTitle: true,
+        backgroundColor: const Color(0xFF05386B),
+        foregroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
-            onPressed: _toggleEditMode,
-            icon: Icon(
-              _isEditing ? Icons.close : Icons.edit_outlined,
-              color: Colors.black,
-            ),
-            tooltip: _isEditing ? 'Cancelar' : 'Editar',
+            icon: Icon(_isEditing ? Icons.close : Icons.edit),
+            onPressed: _toggleEdit,
           ),
+          if (_isEditing)
+            IconButton(icon: const Icon(Icons.save), onPressed: _save),
         ],
       ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFF05386B)),
             )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: isLargeScreen ? 32 : 16,
-                vertical: 20,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Encabezado
-                    _buildHeader(),
-
-                    const SizedBox(height: 24),
-
-                    // Logo del negocio
-                    _buildLogoSection(),
-
-                    const SizedBox(height: 24),
-
-                    // Imágenes del banner
-                    _buildBannerSection(context, isLargeScreen),
-
-                    const SizedBox(height: 24),
-
-                    // Información básica
-                    _buildBasicInfoSection(isLargeScreen),
-
-                    const SizedBox(height: 24),
-
-                    // Dirección
-                    _buildAddressSection(isLargeScreen),
-
-                    const SizedBox(height: 24),
-
-                    // Horario
-                    _buildScheduleSection(),
-
-                    const SizedBox(height: 24),
-
-                    // Configuración de delivery
-                    _buildDeliverySection(isLargeScreen),
-
-                    const SizedBox(height: 32),
-
-                    // Botones de acción
-                    if (_isEditing) _buildActionButtons(),
-
-                    const SizedBox(height: 20),
-                  ],
+          : FadeTransition(
+              opacity: _fadeAnim,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isWide ? 64 : 24,
+                  vertical: 24,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildHeader(),
+                      const SizedBox(height: 40),
+                      _buildVisualSection(isWide),
+                      const SizedBox(height: 40),
+                      _buildInfoSection(isWide),
+                      const SizedBox(height: 40),
+                      _buildScheduleSection(),
+                      const SizedBox(height: 40),
+                      _buildDeliverySection(isWide),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -317,940 +225,401 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        const Text(
-          'Perfil del Negocio',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF05386B),
+        Expanded(
+          child: Text(
+            'Perfil del Negocio',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: const Color(0xFF05386B),
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          _isEditing
-              ? 'Edita la información de tu negocio'
-              : 'Gestiona la información pública de tu negocio',
-          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-        ),
-        const SizedBox(height: 8),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text(
-            'Negocio Activo',
-            style: TextStyle(fontWeight: FontWeight.w500),
-          ),
-          subtitle: Text(
-            _businessProfile.isActive
-                ? 'Tu negocio está visible para los clientes'
-                : 'Tu negocio está oculto temporalmente',
-          ),
+        Switch(
           value: _businessProfile.isActive,
-          activeColor: const Color(0xFF05386B),
+          activeColor: const Color(0xFFFF6B00),
           onChanged: _isEditing
-              ? (value) {
-                  setState(() {
-                    _businessProfile = _businessProfile.copyWith(
-                      isActive: value,
-                    );
-                  });
-                }
+              ? (v) => setState(
+                  () =>
+                      _businessProfile = _businessProfile.copyWith(isActive: v),
+                )
               : null,
         ),
       ],
     );
   }
 
-  Widget _buildLogoSection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Logo del Negocio',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF05386B),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                if (_isEditing)
-                  ElevatedButton(
-                    onPressed: _updateLogo,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF05386B),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.camera_alt_outlined, size: 18),
-                        SizedBox(width: 8),
-                        Text('Cambiar Logo'),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: NetworkImage(_businessProfile.logoUrl),
-                    fit: BoxFit.cover,
-                  ),
-                  border: Border.all(color: Colors.grey[300]!, width: 2),
-                ),
-                child: _isEditing
-                    ? Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Center(
-              child: Text(
-                'Tamaño recomendado: 500x500 px',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBannerSection(BuildContext context, bool isLargeScreen) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Imágenes del Negocio',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF05386B),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                if (_isEditing)
-                  ElevatedButton(
-                    onPressed: _addBannerImage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B00),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.add_photo_alternate_outlined, size: 18),
-                        SizedBox(width: 8),
-                        Text('Agregar Imagen'),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Máximo 5 imágenes. Muestra lo mejor de tu negocio',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: isLargeScreen ? 3 : 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 2,
-              ),
-              itemCount: _businessProfile.bannerUrls.length,
-              itemBuilder: (context, index) {
-                return Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            _businessProfile.bannerUrls[index],
-                          ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    if (_isEditing)
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: GestureDetector(
-                          onTap: () => _removeBannerImage(index),
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(6),
-                            child: const Icon(
-                              Icons.close,
-                              color: Color(0xFFFF6B00),
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBasicInfoSection(bool isLargeScreen) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Información Básica',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF05386B),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Nombre del negocio
-            _buildEditableField(
-              controller: _nameController,
-              label: 'Nombre del Negocio',
-              hintText: 'Ingresa el nombre de tu negocio',
-              isEditing: _isEditing,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'El nombre es requerido';
-                }
-                if (value.length < 3) {
-                  return 'El nombre debe tener al menos 3 caracteres';
-                }
-                return null;
-              },
-            ),
-
-            // Descripción
-            _buildEditableField(
-              controller: _descriptionController,
-              label: 'Descripción',
-              hintText: 'Describe tu negocio',
-              maxLines: 3,
-              isEditing: _isEditing,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'La descripción es requerida';
-                }
-                if (value.length < 10) {
-                  return 'La descripción debe tener al menos 10 caracteres';
-                }
-                return null;
-              },
-            ),
-
-            if (isLargeScreen)
-              _buildContactInfoRow()
-            else
-              Column(
-                children: [
-                  // Teléfono
-                  _buildEditableField(
-                    controller: _phoneController,
-                    label: 'Teléfono',
-                    hintText: '+52 55 1234 5678',
-                    isEditing: _isEditing,
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'El teléfono es requerido';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  // Email
-                  _buildEditableField(
-                    controller: _emailController,
-                    label: 'Correo Electrónico',
-                    hintText: 'contacto@negocio.com',
-                    isEditing: _isEditing,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'El email es requerido';
-                      }
-                      if (!value.contains('@') || !value.contains('.')) {
-                        return 'Ingresa un email válido';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  // Sitio web
-                  _buildEditableField(
-                    controller: _websiteController,
-                    label: 'Sitio Web',
-                    hintText: 'www.tunegocio.com',
-                    isEditing: _isEditing,
-                    keyboardType: TextInputType.url,
-                  ),
-                ],
-              ),
-
-            // Categorías
-            const SizedBox(height: 16),
-            const Text(
-              'Categorías',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF05386B),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _businessProfile.categories.map((category) {
-                return Chip(
-                  label: Text(category),
-                  backgroundColor: const Color(0xFF05386B).withOpacity(0.1),
-                  deleteIcon: _isEditing
-                      ? const Icon(Icons.close, size: 16)
-                      : null,
-                  onDeleted: _isEditing
-                      ? () {
-                          setState(() {
-                            _businessProfile.categories.remove(category);
-                          });
-                        }
-                      : null,
-                );
-              }).toList(),
-            ),
-            if (_isEditing)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    // Acción para agregar categoría
-                  },
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Agregar Categoría'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: const Color(0xFF05386B),
-                    elevation: 0,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContactInfoRow() {
-    return Row(
+  Widget _buildVisualSection(bool isWide) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: _buildEditableField(
-            controller: _phoneController,
-            label: 'Teléfono',
-            hintText: '+52 55 1234 5678',
-            isEditing: _isEditing,
-            keyboardType: TextInputType.phone,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'El teléfono es requerido';
-              }
-              return null;
-            },
+        const Text(
+          'Visuales',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF05386B),
           ),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildEditableField(
-            controller: _emailController,
-            label: 'Correo Electrónico',
-            hintText: 'contacto@negocio.com',
-            isEditing: _isEditing,
-            keyboardType: TextInputType.emailAddress,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'El email es requerido';
-              }
-              if (!value.contains('@') || !value.contains('.')) {
-                return 'Ingresa un email válido';
-              }
-              return null;
-            },
+        const SizedBox(height: 24),
+        Card(
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildEditableField(
-            controller: _websiteController,
-            label: 'Sitio Web',
-            hintText: 'www.tunegocio.com',
-            isEditing: _isEditing,
-            keyboardType: TextInputType.url,
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              children: [
+                _buildLogo(),
+                const SizedBox(height: 40),
+                _buildBanners(isWide),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildAddressSection(bool isLargeScreen) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildLogo() {
+    return Column(
+      children: [
+        const Text(
+          'Logo',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 16),
+        Stack(
+          alignment: Alignment.bottomRight,
           children: [
-            const Text(
-              'Ubicación y Dirección',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF05386B),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            if (isLargeScreen)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildEditableField(
-                      controller: _addressController,
-                      label: 'Dirección',
-                      hintText: 'Calle y número',
-                      isEditing: _isEditing,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'La dirección es requerida';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildEditableField(
-                      controller: _cityController,
-                      label: 'Ciudad',
-                      hintText: 'Nombre de la ciudad',
-                      isEditing: _isEditing,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'La ciudad es requerida';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              )
-            else
-              Column(
-                children: [
-                  _buildEditableField(
-                    controller: _addressController,
-                    label: 'Dirección',
-                    hintText: 'Calle y número',
-                    isEditing: _isEditing,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'La dirección es requerida';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  _buildEditableField(
-                    controller: _cityController,
-                    label: 'Ciudad',
-                    hintText: 'Nombre de la ciudad',
-                    isEditing: _isEditing,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'La ciudad es requerida';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-
-            const SizedBox(height: 16),
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.grey[100],
-                border: Border.all(color: Colors.grey[300]!),
-              ),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.map_outlined,
-                      size: 48,
-                      color: Color(0xFF05386B),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Mapa de ubicación',
-                      style: TextStyle(
-                        color: Color(0xFF05386B),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Haz clic para ver en el mapa',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
+            CircleAvatar(
+              radius: 80,
+              backgroundImage: NetworkImage(_businessProfile.logoUrl),
             ),
             if (_isEditing)
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    // Acción para actualizar ubicación en mapa
-                  },
-                  icon: const Icon(Icons.location_on_outlined, size: 18),
-                  label: const Text('Actualizar Ubicación en Mapa'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF05386B),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: const Color(0xFFFF6B00),
+                child: const Icon(Icons.camera_alt, color: Colors.white),
               ),
           ],
         ),
-      ),
+      ],
+    );
+  }
+
+  Widget _buildBanners(bool isWide) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Banners',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            if (_isEditing)
+              IconButton(
+                icon: const Icon(Icons.add_photo_alternate),
+                onPressed: () {},
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 180,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount:
+                _businessProfile.bannerUrls.length + (_isEditing ? 1 : 0),
+            itemBuilder: (context, i) {
+              if (i == _businessProfile.bannerUrls.length) {
+                return GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    width: 300,
+                    margin: const EdgeInsets.only(right: 16),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xFF05386B),
+                        width: 2,
+                        style: BorderStyle.solid,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.add,
+                        size: 48,
+                        color: Color(0xFF05386B),
+                      ),
+                    ),
+                  ),
+                );
+              }
+              return Container(
+                width: 300,
+                margin: const EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                    image: NetworkImage(_businessProfile.bannerUrls[i]),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: _isEditing
+                    ? Align(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: const CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Icon(Icons.close, color: Colors.red),
+                          ),
+                          onPressed: () {},
+                        ),
+                      )
+                    : null,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoSection(bool isWide) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Información Básica',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF05386B),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Card(
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: isWide
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _buildInfoLeft()),
+                      const SizedBox(width: 40),
+                      Expanded(child: _buildInfoRight()),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      _buildInfoLeft(),
+                      const SizedBox(height: 40),
+                      _buildInfoRight(),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoLeft() {
+    return Column(
+      children: [
+        _field(
+          'Nombre',
+          _nameCtrl,
+          validator: (v) => v!.isEmpty ? 'Requerido' : null,
+        ),
+        const SizedBox(height: 24),
+        _field('Descripción', _descCtrl, maxLines: 4),
+        const SizedBox(height: 24),
+        _field('Teléfono', _phoneCtrl),
+        const SizedBox(height: 24),
+        _field('Email', _emailCtrl),
+      ],
+    );
+  }
+
+  Widget _buildInfoRight() {
+    return Column(
+      children: [
+        _field('Dirección', _addrCtrl),
+        const SizedBox(height: 24),
+        _field('Ciudad', _cityCtrl),
+        const SizedBox(height: 24),
+        _field('Sitio Web', _webCtrl),
+      ],
+    );
+  }
+
+  Widget _field(
+    String label,
+    TextEditingController ctrl, {
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF05386B),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: ctrl,
+          enabled: _isEditing,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFF05386B), width: 2),
+            ),
+          ),
+          validator: validator,
+        ),
+      ],
     );
   }
 
   Widget _buildScheduleSection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Horario de Atención',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF05386B),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                if (_isEditing)
-                  ElevatedButton(
-                    onPressed: () {
-                      // Acción para copiar horario a todos los días
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B00),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.copy_outlined, size: 18),
-                        SizedBox(width: 8),
-                        Text('Copiar Horario'),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Configura los horarios de atención por día',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _businessProfile.schedule.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final day = _businessProfile.schedule[index];
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                  leading: Checkbox(
-                    value: day.isOpen,
-                    activeColor: const Color(0xFF05386B),
-                    onChanged: _isEditing
-                        ? (value) => _toggleDayStatus(index)
-                        : null,
-                  ),
-                  title: Text(
-                    day.day,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: day.isOpen ? Colors.black : Colors.grey,
-                    ),
-                  ),
-                  subtitle: day.isOpen
-                      ? Text(
-                          '${_formatTime(day.openTime)} - ${_formatTime(day.closeTime)}',
-                          style: const TextStyle(fontSize: 14),
-                        )
-                      : const Text(
-                          'Cerrado',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                  trailing: _isEditing && day.isOpen
-                      ? IconButton(
-                          onPressed: () => _updateSchedule(index),
-                          icon: const Icon(
-                            Icons.edit_outlined,
-                            color: Color(0xFF05386B),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Horario de Atención',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF05386B),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Card(
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _businessProfile.schedule.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, i) {
+              final day = _businessProfile.schedule[i];
+              return ListTile(
+                leading: Checkbox(
+                  value: day.isOpen,
+                  activeColor: const Color(0xFF05386B),
+                  onChanged: _isEditing
+                      ? (v) => setState(
+                          () => _businessProfile.schedule[i] = day.copyWith(
+                            isOpen: v!,
                           ),
                         )
                       : null,
-                  onTap: _isEditing && day.isOpen
-                      ? () => _updateSchedule(index)
-                      : null,
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDeliverySection(bool isLargeScreen) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Configuración de Delivery',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF05386B),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            if (isLargeScreen)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildEditableField(
-                      controller: _deliveryRadiusController,
-                      label: 'Radio de Entrega (km)',
-                      hintText: '5',
-                      isEditing: _isEditing,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'El radio es requerido';
-                        }
-                        final radius = double.tryParse(value);
-                        if (radius == null || radius <= 0) {
-                          return 'Ingresa un número válido';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildEditableField(
-                      controller: _preparationTimeController,
-                      label: 'Tiempo de Preparación (min)',
-                      hintText: '25',
-                      isEditing: _isEditing,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'El tiempo es requerido';
-                        }
-                        final time = int.tryParse(value);
-                        if (time == null || time <= 0) {
-                          return 'Ingresa un número válido';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              )
-            else
-              Column(
-                children: [
-                  _buildEditableField(
-                    controller: _deliveryRadiusController,
-                    label: 'Radio de Entrega (km)',
-                    hintText: '5',
-                    isEditing: _isEditing,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'El radio es requerido';
-                      }
-                      final radius = double.tryParse(value);
-                      if (radius == null || radius <= 0) {
-                        return 'Ingresa un número válido';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  _buildEditableField(
-                    controller: _preparationTimeController,
-                    label: 'Tiempo de Preparación (min)',
-                    hintText: '25',
-                    isEditing: _isEditing,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'El tiempo es requerido';
-                      }
-                      final time = int.tryParse(value);
-                      if (time == null || time <= 0) {
-                        return 'Ingresa un número válido';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF05386B).withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF05386B).withOpacity(0.1),
                 ),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.info_outline, color: Color(0xFF05386B)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'El radio de entrega determina la zona geográfica donde ofreces delivery. '
-                      'Los clientes fuera de esta zona no podrán realizar pedidos.',
-                      style: TextStyle(color: Colors.grey[700], fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton(
-            onPressed: _toggleEditMode,
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              side: const BorderSide(color: Colors.grey),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Cancelar',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _saveChanges,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B00),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Guardar Cambios',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+                title: Text(
+                  day.day,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  day.isOpen
+                      ? '${_formatTime(day.openTime)} - ${_formatTime(day.closeTime)}'
+                      : 'Cerrado',
+                ),
+                trailing: _isEditing && day.isOpen
+                    ? IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () async {
+                          final open = await showTimePicker(
+                            context: context,
+                            initialTime: day.openTime,
+                          );
+                          if (open != null) {
+                            final close = await showTimePicker(
+                              context: context,
+                              initialTime: day.closeTime,
+                            );
+                            if (close != null)
+                              setState(
+                                () => _businessProfile.schedule[i] = day
+                                    .copyWith(openTime: open, closeTime: close),
+                              );
+                          }
+                        },
+                      )
+                    : null,
+              );
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEditableField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-    required bool isEditing,
-    String? Function(String?)? validator,
-    int maxLines = 1,
-    TextInputType? keyboardType,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF05386B),
-            ),
+  Widget _buildDeliverySection(bool isWide) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Delivery',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF05386B),
           ),
-          const SizedBox(height: 8),
-          isEditing
-              ? TextFormField(
-                  controller: controller,
-                  maxLines: maxLines,
-                  keyboardType: keyboardType,
-                  decoration: InputDecoration(
-                    hintText: hintText,
-                    filled: true,
-                    fillColor: Colors.white,
+        ),
+        const SizedBox(height: 24),
+        Card(
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: isWide
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: _field('Radio de entrega (km)', _radiusCtrl),
+                      ),
+                      const SizedBox(width: 40),
+                      Expanded(
+                        child: _field('Tiempo preparación (min)', _prepCtrl),
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      _field('Radio de entrega (km)', _radiusCtrl),
+                      const SizedBox(height: 24),
+                      _field('Tiempo preparación (min)', _prepCtrl),
+                    ],
                   ),
-                  validator: validator,
-                )
-              : Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!),
-                  ),
-                  child: Text(
-                    controller.text.isNotEmpty
-                        ? controller.text
-                        : 'No especificado',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: controller.text.isNotEmpty
-                          ? Colors.black
-                          : Colors.grey,
-                    ),
-                  ),
-                ),
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
-  String _formatTime(TimeOfDay time) {
-    final now = DateTime.now();
-    final dateTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
-    return DateFormat('h:mm a').format(dateTime);
-  }
+  String _formatTime(TimeOfDay t) =>
+      DateFormat('h:mm a').format(DateTime(2020, 1, 1, t.hour, t.minute));
 }
 
 // Modelos de datos

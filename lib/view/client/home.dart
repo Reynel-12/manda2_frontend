@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manda2_frontend/view/business/promotion_screen.dart';
 import 'package:manda2_frontend/view/client/carrito_screen.dart';
 import 'package:manda2_frontend/view/general/configuracion_screen.dart';
 import 'package:manda2_frontend/view/client/favorite_screen.dart'
@@ -517,7 +518,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // Promociones corregidas para desktop
   Widget _buildPromotionsSection(bool isDesktop) {
     return SizedBox(
-      height: 200,
+      height: 226,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -589,9 +590,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const Spacer(),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PromotionsScreen(),
+                        ),
+                      );
+                    },
                     child: const Text(
                       'Ver detalles →',
                       style: TextStyle(

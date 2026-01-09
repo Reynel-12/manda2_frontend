@@ -341,11 +341,11 @@ class _SettingsScreenState extends State<SettingsScreen>
         _buildInfoTile(Icons.calendar_today, 'Miembro desde', '15 Ene 2024'),
         const SizedBox(height: 40),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildStat('12', 'Pedidos', Icons.shopping_bag),
             _buildStat('\$245', 'Gastado', Icons.attach_money),
-            _buildStat('4.8', 'Rating', Icons.star),
+            // _buildStat('4.8', 'Rating', Icons.star),
           ],
         ),
         const SizedBox(height: 40),

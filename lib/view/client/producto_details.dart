@@ -13,11 +13,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     with TickerProviderStateMixin {
   int _quantity = 1;
   bool _isFavorite = false;
-  int _currentImageIndex = 0;
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late ScrollController _scrollController;
+  final ValueNotifier<double> _titleOpacity = ValueNotifier<double>(0.0);
 
   final List<ProductSpec> specifications = [
     ProductSpec('Marca', 'Del Valle'),
@@ -55,11 +56,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     );
 
     _animationController.forward();
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      double offset = _scrollController.offset;
+      double newOpacity = 0.0;
+      // expandedHeight is 400. Start showing title when offset > 320.
+      if (offset > 320) {
+        newOpacity = (offset - 320) / 40;
+        if (newOpacity > 1.0) newOpacity = 1.0;
+      }
+      if (newOpacity != _titleOpacity.value) {
+        _titleOpacity.value = newOpacity;
+      }
+    });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _scrollController.dispose();
+    _titleOpacity.dispose();
     super.dispose();
   }
 
@@ -92,42 +109,41 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: CustomScrollView(
+          controller: _scrollController,
           slivers: [
             // Hero AppBar con carousel
             SliverAppBar(
               expandedHeight: 400,
               pinned: true,
+              title: ValueListenableBuilder<double>(
+                valueListenable: _titleOpacity,
+                builder: (context, opacity, child) {
+                  return Opacity(
+                    opacity: opacity,
+                    child: Text(
+                      widget.product.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                },
+              ),
               flexibleSpace: FlexibleSpaceBar(
                 background: _buildImageCarousel(),
-                title: AnimatedOpacity(
-                  opacity: 1.0,
-                  duration: const Duration(milliseconds: 300),
-                  child: Text(
-                    widget.product.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
               ),
-              leading: CircleAvatar(
-                backgroundColor: Colors.white70,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black87),
-                  onPressed: () => Navigator.pop(context),
-                ),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
               ),
               actions: [
-                CircleAvatar(
-                  backgroundColor: Colors.white70,
-                  child: IconButton(
-                    icon: Icon(
-                      _isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: _isFavorite ? Colors.red : Colors.black87,
-                    ),
-                    onPressed: () => setState(() => _isFavorite = !_isFavorite),
+                IconButton(
+                  icon: Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorite ? Colors.red : Colors.white,
                   ),
+                  onPressed: () => setState(() => _isFavorite = !_isFavorite),
                 ),
                 const SizedBox(width: 8),
               ],
@@ -170,47 +186,38 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
 
   Widget _buildImageCarousel() {
     return Stack(
+      fit: StackFit.expand,
       children: [
-        PageView.builder(
-          itemCount: widget.product.image.length,
-          onPageChanged: (i) => setState(() => _currentImageIndex = i),
-          itemBuilder: (context, index) {
-            return InteractiveViewer(
-              child: Hero(
-                tag: 'product_${widget.product.id}',
-                child: Image.network(
-                  widget.product.image[index],
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.image, size: 80),
-                  ),
-                ),
-              ),
-            );
-          },
+        Image.network(widget.product.image.first, fit: BoxFit.cover),
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+            ),
+          ),
         ),
         Positioned(
-          bottom: 16,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              widget.product.image.length,
-              (i) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _currentImageIndex == i
-                      ? const Color(0xFFFF6B00)
-                      : Colors.white.withOpacity(0.6),
+          bottom: 24,
+          left: 24,
+          right: 24,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.product.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
+              Text(
+                widget.product.description,
+                style: TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+            ],
           ),
         ),
         if (widget.product.originalPrice != null)

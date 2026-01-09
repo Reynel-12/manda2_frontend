@@ -317,10 +317,7 @@ class _StoreScreenState extends State<StoreScreen>
               ),
               flexibleSpace: FlexibleSpaceBar(background: _buildStoreBanner()),
               leading: IconButton(
-                icon: const CircleAvatar(
-                  backgroundColor: Colors.white70,
-                  child: Icon(Icons.arrow_back, color: Colors.black87),
-                ),
+                icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
               actions: [
