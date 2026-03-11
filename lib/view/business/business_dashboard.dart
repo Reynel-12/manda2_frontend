@@ -235,6 +235,215 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen>
     }
   }
 
+  void _markOrderReady(String orderId) {
+    final orderIndex = _orders.indexWhere((order) => order.id == orderId);
+    if (orderIndex != -1 && _orders[orderIndex].status == OrderStatus.preparing) {
+      setState(() {
+        _orders[orderIndex] = _orders[orderIndex].copyWith(
+          status: OrderStatus.ready,
+          readyTime: DateTime.now(),
+        );
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pedido $orderId marcado como listo'),
+          backgroundColor: const Color(0xFF05386B),
+        ),
+      );
+    }
+  }
+
+  void _finalizeOrder(String orderId) {
+    final orderIndex = _orders.indexWhere((order) => order.id == orderId);
+    if (orderIndex != -1 && _orders[orderIndex].status == OrderStatus.ready) {
+      setState(() {
+        _orders[orderIndex] = _orders[orderIndex].copyWith(
+          status: OrderStatus.delivered,
+          deliveredTime: DateTime.now(),
+        );
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pedido $orderId finalizado (entregado)'),
+          backgroundColor: const Color(0xFF05386B),
+        ),
+      );
+    }
+  }
+
+  void _cancelOrder(String orderId, {required String reason}) {
+    final orderIndex = _orders.indexWhere((order) => order.id == orderId);
+    if (orderIndex != -1 &&
+        _orders[orderIndex].status != OrderStatus.delivered &&
+        _orders[orderIndex].status != OrderStatus.cancelled) {
+      setState(() {
+        _orders[orderIndex] = _orders[orderIndex].copyWith(
+          status: OrderStatus.cancelled,
+          cancelledTime: DateTime.now(),
+          cancelReason: reason.trim(),
+        );
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pedido $orderId cancelado'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _confirmAcceptOrder(BusinessOrder order) async {
+    final shouldAccept = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final isWide = MediaQuery.of(context).size.width >= 520;
+        return AlertDialog(
+          title: const Text('Aceptar pedido'),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: isWide ? 520 : 360),
+            child: Text(
+              '¿Deseas aceptar el pedido ${order.id} de ${order.customerName}?\n\n'
+              'Al aceptarlo pasarás a preparación.',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('No'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF6B00),
+              ),
+              child: const Text('Sí, aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldAccept == true) {
+      _acceptOrder(order.id);
+    }
+  }
+
+  Future<void> _promptCancelOrder(
+    BusinessOrder order, {
+    String title = 'Cancelar pedido',
+    String confirmLabel = 'Sí, cancelar',
+  }) async {
+    final reasonController = TextEditingController();
+    String? errorText;
+    try {
+      final result = await showDialog<String?>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          final isWide = MediaQuery.of(context).size.width >= 520;
+          return StatefulBuilder(
+            builder: (context, setLocalState) {
+              return AlertDialog(
+                title: Text(title),
+                content: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: isWide ? 520 : 360),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Pedido: ${order.id}'),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: reasonController,
+                        autofocus: true,
+                        maxLines: 3,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          labelText: 'Motivo',
+                          hintText:
+                              'Ej. Cliente no responde / Sin stock / Dirección inválida',
+                          errorText: errorText,
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Esta acción no se puede deshacer.',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, null),
+                    child: const Text('Volver'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final reason = reasonController.text.trim();
+                      if (reason.isEmpty) {
+                        setLocalState(() => errorText = 'Ingresa un motivo');
+                        return;
+                      }
+                      Navigator.pop(context, reason);
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: Text(confirmLabel),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+
+      if (result != null) {
+        _cancelOrder(order.id, reason: result);
+      }
+    } finally {
+      reasonController.dispose();
+    }
+  }
+
+  Future<void> _confirmFinalizeOrder(BusinessOrder order) async {
+    final shouldFinalize = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final isWide = MediaQuery.of(context).size.width >= 520;
+        return AlertDialog(
+          title: const Text('Finalizar pedido'),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: isWide ? 520 : 360),
+            child: Text(
+              '¿Confirmas que el pedido ${order.id} está listo y se finaliza como entregado?',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('No'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF05386B),
+              ),
+              child: const Text('Sí, finalizar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldFinalize == true) {
+      _finalizeOrder(order.id);
+    }
+  }
+
   void _viewOrderDetails(BusinessOrder order) {
     showModalBottomSheet(
       context: context,
@@ -596,30 +805,30 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen>
 
   Widget _buildActionButtons(BusinessOrder order) {
     if (order.status == OrderStatus.pending) {
-      return Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        alignment: WrapAlignment.end,
-        children: [
-          OutlinedButton(
-            onPressed: () {},
-            child: const Text('Rechazar', style: TextStyle(color: Colors.red)),
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () => _viewOrderDetails(order),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFF6B00),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B00),
-            ),
-            child: const Text('Aceptar'),
-          ),
-        ],
+          child: const Text('Ver Detalles'),
+        ),
       );
     }
-    return ElevatedButton(onPressed: () {}, child: const Text('Ver Detalles'));
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => _viewOrderDetails(order),
+        child: const Text('Ver Detalles'),
+      ),
+    );
   }
 
   // Bottom sheet para detalles del pedido
   Widget _buildOrderDetailsSheet(BusinessOrder order) {
+    final actions = _buildOrderDetailActions(order);
+
     return Container(
       padding: const EdgeInsets.all(20),
       constraints: BoxConstraints(
@@ -679,6 +888,8 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen>
               ],
             ),
             const SizedBox(height: 16),
+            _buildOrderProgress(order),
+            const SizedBox(height: 16),
             // Información del cliente
             _buildDetailRow(
               Icons.person_outlined,
@@ -710,6 +921,13 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen>
               'Método de pago',
               order.paymentMethod,
             ),
+            if (order.status == OrderStatus.cancelled &&
+                (order.cancelReason?.trim().isNotEmpty ?? false))
+              _buildDetailRow(
+                Icons.cancel_outlined,
+                'Motivo de cancelación',
+                order.cancelReason!.trim(),
+              ),
             if (order.notes.isNotEmpty)
               _buildDetailRow(Icons.note_outlined, 'Notas', order.notes),
             const SizedBox(height: 20),
@@ -755,53 +973,236 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen>
             _buildTotalRow('Tarifa de entrega', order.deliveryFee),
             _buildTotalRow('Total', order.totalAmount, isTotal: true),
             const SizedBox(height: 24),
-            // Botones de acción
-            if (order.status == OrderStatus.pending)
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF05386B)),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Cerrar',
-                        style: TextStyle(color: Color(0xFF05386B)),
-                      ),
-                    ),
+            // Botones de acción (según estado)
+            actions,
+            SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderProgress(BusinessOrder order) {
+    final steps = <_OrderStep>[
+      _OrderStep(
+        label: 'Pendiente',
+        icon: Icons.schedule,
+        isActive: true,
+        isDone: true,
+        time: _formatTime(order.orderTime),
+      ),
+      _OrderStep(
+        label: 'Aceptado',
+        icon: Icons.thumb_up_alt_outlined,
+        isActive: order.status != OrderStatus.pending,
+        isDone: order.acceptedTime != null,
+        time: order.acceptedTime != null ? _formatTime(order.acceptedTime!) : null,
+      ),
+      _OrderStep(
+        label: 'Listo',
+        icon: Icons.inventory_2_outlined,
+        isActive: order.status == OrderStatus.ready ||
+            order.status == OrderStatus.onTheWay ||
+            order.status == OrderStatus.delivered,
+        isDone: order.readyTime != null,
+        time: order.readyTime != null ? _formatTime(order.readyTime!) : null,
+      ),
+      _OrderStep(
+        label: 'Entregado',
+        icon: Icons.check_circle_outline,
+        isActive: order.status == OrderStatus.delivered,
+        isDone: order.deliveredTime != null || order.status == OrderStatus.delivered,
+        time:
+            order.deliveredTime != null ? _formatTime(order.deliveredTime!) : null,
+      ),
+    ];
+
+    final isCancelled = order.status == OrderStatus.cancelled;
+
+    return Card(
+      elevation: 0,
+      color: const Color(0xFF05386B).withOpacity(0.04),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.route_outlined, color: Color(0xFF05386B)),
+                const SizedBox(width: 8),
+                Text(
+                  isCancelled ? 'Pedido cancelado' : 'Progreso del pedido',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF05386B),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _acceptOrder(order.id);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF6B00),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Aceptar Pedido',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                ),
+                const Spacer(),
+                if (isCancelled && order.cancelledTime != null)
+                  Text(
+                    _formatTime(order.cancelledTime!),
+                    style: TextStyle(color: Colors.grey[700]),
                   ),
-                ],
-              )
-            else
-              SizedBox(
-                width: double.infinity,
+              ],
+            ),
+            const SizedBox(height: 12),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 520;
+                return isWide
+                    ? Row(
+                        children: steps
+                            .map((s) => Expanded(child: _buildStepChip(s)))
+                            .toList(),
+                      )
+                    : Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: steps.map(_buildStepChip).toList(),
+                      );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepChip(_OrderStep step) {
+    final baseColor = step.isDone ? const Color(0xFF05386B) : Colors.grey[600]!;
+    final bg = step.isDone
+        ? const Color(0xFF05386B).withOpacity(0.10)
+        : Colors.grey.withOpacity(0.08);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: step.isActive ? baseColor.withOpacity(0.35) : Colors.transparent,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(step.icon, size: 18, color: baseColor),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  step.label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: baseColor,
+                    fontSize: 12.5,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (step.time != null)
+                  Text(
+                    step.time!,
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 11.5,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderDetailActions(BusinessOrder order) {
+    final closeButton = OutlinedButton(
+      onPressed: () => Navigator.pop(context),
+      style: OutlinedButton.styleFrom(
+        side: const BorderSide(color: Color(0xFF05386B)),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: const Text(
+        'Cerrar',
+        style: TextStyle(color: Color(0xFF05386B)),
+      ),
+    );
+
+    if (order.status == OrderStatus.pending) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: closeButton),
+              const SizedBox(width: 12),
+              Expanded(
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _confirmAcceptOrder(order);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6B00),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Aceptar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _promptCancelOrder(
+                  order,
+                  title: 'Rechazar pedido',
+                  confirmLabel: 'Sí, rechazar',
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Rechazar',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (order.status == OrderStatus.preparing) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: closeButton),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _markOrderReady(order.id);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF05386B),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -810,16 +1211,122 @@ class _BusinessDashboardScreenState extends State<BusinessDashboardScreen>
                     ),
                   ),
                   child: const Text(
-                    'Cerrar',
+                    'Marcar listo',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
-            SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
-          ],
-        ),
-      ),
-    );
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _promptCancelOrder(order);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Cancelar pedido',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (order.status == OrderStatus.ready) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: closeButton),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _confirmFinalizeOrder(order);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF05386B),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Finalizar',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _promptCancelOrder(order);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Cancelar pedido',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (order.status == OrderStatus.onTheWay) {
+      return Column(
+        children: [
+          SizedBox(width: double.infinity, child: closeButton),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _promptCancelOrder(order);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Cancelar pedido',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // delivered / cancelled
+    return SizedBox(width: double.infinity, child: closeButton);
   }
 
   Widget _buildDetailRow(IconData icon, String label, String value) {
@@ -993,6 +1500,10 @@ class BusinessOrder {
   final String deliveryAddress;
   final String notes;
   DateTime? acceptedTime;
+  DateTime? readyTime;
+  DateTime? deliveredTime;
+  DateTime? cancelledTime;
+  String? cancelReason;
 
   BusinessOrder({
     required this.id,
@@ -1008,6 +1519,10 @@ class BusinessOrder {
     required this.deliveryAddress,
     required this.notes,
     this.acceptedTime,
+    this.readyTime,
+    this.deliveredTime,
+    this.cancelledTime,
+    this.cancelReason,
   });
 
   BusinessOrder copyWith({
@@ -1024,6 +1539,10 @@ class BusinessOrder {
     String? deliveryAddress,
     String? notes,
     DateTime? acceptedTime,
+    DateTime? readyTime,
+    DateTime? deliveredTime,
+    DateTime? cancelledTime,
+    String? cancelReason,
   }) {
     return BusinessOrder(
       id: id ?? this.id,
@@ -1040,8 +1559,28 @@ class BusinessOrder {
       deliveryAddress: deliveryAddress ?? this.deliveryAddress,
       notes: notes ?? this.notes,
       acceptedTime: acceptedTime ?? this.acceptedTime,
+      readyTime: readyTime ?? this.readyTime,
+      deliveredTime: deliveredTime ?? this.deliveredTime,
+      cancelledTime: cancelledTime ?? this.cancelledTime,
+      cancelReason: cancelReason ?? this.cancelReason,
     );
   }
+}
+
+class _OrderStep {
+  final String label;
+  final IconData icon;
+  final bool isActive;
+  final bool isDone;
+  final String? time;
+
+  const _OrderStep({
+    required this.label,
+    required this.icon,
+    required this.isActive,
+    required this.isDone,
+    this.time,
+  });
 }
 
 class OrderItem {
